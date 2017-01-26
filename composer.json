@@ -1,0 +1,16 @@
+{
+  "name": "furqansiddiqui/bitcoind-rpc",
+  "type": "library",
+  "description": "RPC client for Bitcoin (and other altcoins based on bitcoind)",
+  "keywords": ["bitcoind", "bitcoin", "bitcoind-rpc", "litecoin", "altcoins"],
+  "license": "MIT",
+  "require": {
+    "php": ">=7.0.0",
+    "furqansiddiqui/http-client": "0.2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "BitcoinRPC\\": ["src/BitcoinRPC"]
+    }
+  }
+}
