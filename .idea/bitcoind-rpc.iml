@@ -17,10 +17,10 @@
     <orderEntry type="module-library">
       <library name="PHP" type="php">
         <CLASSES>
-          <root url="file://D:/Tools/Library/HttpClient/http-client-0.2.0" />
+          <root url="file://D:/Tools/Library/HttpClient/http-client-0.2.1" />
         </CLASSES>
         <SOURCES>
-          <root url="file://D:/Tools/Library/HttpClient/http-client-0.2.0" />
+          <root url="file://D:/Tools/Library/HttpClient/http-client-0.2.1" />
         </SOURCES>
       </library>
     </orderEntry>
