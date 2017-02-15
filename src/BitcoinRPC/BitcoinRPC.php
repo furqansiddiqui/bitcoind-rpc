@@ -183,7 +183,7 @@ class BitcoinRPC
         // Check for Daemon Error
         $error  =   $result["error"] ?? null;
         $result =   $result["result"] ?? null;
-        if(!is_null($result["error"])   ||  is_null($result)) {
+        if(!is_null($error) ||  is_null($result)) {
             $errorCode  =   intval($error["code"] ?? 0);
             $errorMessage   =   $error["message"] ?? 'An error occurred';
             throw new DaemonException($errorMessage, $errorCode);

@@ -37,4 +37,18 @@ class Wallet
 
         return bcadd(strval($balance), "0", BitcoinRPC::BCMATH_SCALE);
     }
+
+    /**
+     * @return string
+     * @throws WalletException
+     */
+    public function getNewAddress() : string
+    {
+        $address    =   $this->client->jsonRPC(\HttpClient::Post(), "getnewaddress");
+        if(!is_string($address)) {
+            throw WalletException::unexpectedResultType(__METHOD__, "string", gettype($address));
+        }
+
+        return $address;
+    }
 }
