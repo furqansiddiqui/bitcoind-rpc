@@ -21,20 +21,23 @@ class BlockChain
      */
     public function __construct(BitcoinRPC $client)
     {
-        $this->client   =   $client;
+        $this->client = $client;
     }
 
     /**
      * @return int
      * @throws BlockChainException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
      */
-    public function getBlockCount() : int
+    public function getBlockCount(): int
     {
-        $count  =   $this->client->jsonRPC(\HttpClient::Post(), "getblockcount");
-        if(!is_int($count)) {
-            throw BlockChainException::unexpectedResultType(__METHOD__, "int", gettype($count));
+        $request = $this->client->jsonRPC("getblockcount");
+        $blockCount = $request->get("result");
+        if (!is_int($blockCount)) {
+            throw BlockChainException::unexpectedResultType(__METHOD__, "int", gettype($blockCount));
         }
 
-        return $count;
+        return $blockCount;
     }
 }
