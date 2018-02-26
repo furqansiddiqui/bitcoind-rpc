@@ -45,6 +45,14 @@ class Wallet
     }
 
     /**
+     * @return array
+     */
+    private function params(): array
+    {
+        return [sprintf('-wallet=%s', $this->name)];
+    }
+
+    /**
      * @param int $confirmations
      * @param null|string $addr
      * @return string
@@ -54,7 +62,7 @@ class Wallet
      */
     public function getBalance(int $confirmations = 1, ?string $addr = null): string
     {
-        $params = [];
+        $params = $this->params();
         if ($addr) {
             $params[] = $addr;
         }
@@ -80,7 +88,7 @@ class Wallet
      */
     public function getNewAddress(): string
     {
-        $request = $this->client->jsonRPC("getnewaddress");
+        $request = $this->client->jsonRPC("getnewaddress", $this->params());
         $address = $request->get("result");
         if (!is_string($address)) {
             throw WalletException::unexpectedResultType("getnewaddress", "string", gettype($address));
