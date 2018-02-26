@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace BitcoinRPC\Exception;
 
-use BitcoinRPC\BitcoinRPCException;
-
 /**
  * Class BlockChainException
  * @package BitcoinRPC\Exception
@@ -17,7 +15,7 @@ class BlockChainException extends BitcoinRPCException
      * @param string $got
      * @return BlockChainException
      */
-    public static function unexpectedResultType(string $method, string $expected, string $got) : self
+    public static function unexpectedResultType(string $method, string $expected, string $got): self
     {
         return new self(
             sprintf(
