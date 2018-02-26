@@ -5,8 +5,8 @@
   "keywords": ["bitcoind", "bitcoin", "bitcoind-rpc", "litecoin", "altcoins"],
   "license": "MIT",
   "require": {
-    "php": ">=7.0.0",
-    "furqansiddiqui/http-client": "0.2.1"
+    "php": ">=7.1.0",
+    "furqansiddiqui/http-client": "0.3.0"
   },
   "autoload": {
     "psr-4": {
