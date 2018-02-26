@@ -25,14 +25,23 @@ class Wallet
 {
     /** @var BitcoinRPC */
     private $client;
+    /** @var string */
+    private $name;
 
     /**
      * Wallet constructor.
      * @param BitcoinRPC $client
+     * @param string $name
+     * @throws WalletException
      */
-    public function __construct(BitcoinRPC $client)
+    public function __construct(BitcoinRPC $client, string $name)
     {
+        if (!preg_match('/[\w\-]+(\.[a-z]{2,8})?/', $name)) {
+            throw new WalletException('Invalid wallet file/name');
+        }
+
         $this->client = $client;
+        $this->name = $name;
     }
 
     /**

@@ -44,8 +44,9 @@ class BitcoinRPC
     private $ssl;
     /** @var null|string */
     private $sslCA;
+
     /** @var Wallet */
-    private $wallet;
+    private $wallets;
     /** @var BlockChain */
     private $blockChain;
 
@@ -68,8 +69,7 @@ class BitcoinRPC
         $this->username = $username;
         $this->password = $password;
         $this->ssl = false;
-
-        $this->wallet = new Wallet($this);
+        $this->wallets = [];
         $this->blockChain = new BlockChain($this);
     }
 
@@ -94,11 +94,19 @@ class BitcoinRPC
     }
 
     /**
+     * @param string $name
      * @return Wallet
      */
-    public function wallet(): Wallet
+    public function wallet(string $name = "wallet.dat"): Wallet
     {
-        return $this->wallet;
+        $key = strtolower($name);
+        if (array_key_exists($key, $this->wallets)) {
+            return $this->wallets[$key];
+        }
+
+        $wallet = new Wallet($this, $name);
+        $this->wallets[$key] = $wallet;
+        return $wallet;
     }
 
     /**
