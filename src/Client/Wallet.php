@@ -48,6 +48,14 @@ class Wallet
     }
 
     /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        return ['Wallet ' . $this->name];
+    }
+
+    /**
      * @param string $passPhrase
      * @return Wallet
      */
