@@ -16,6 +16,7 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\WalletException;
+use HttpClient\Response\JSONResponse;
 
 /**
  * Class Wallet
@@ -45,11 +46,15 @@ class Wallet
     }
 
     /**
-     * @return array
+     * @param string $command
+     * @param array|null $params
+     * @return JSONResponse
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
      */
-    private function params(): array
+    private function walletRPC(string $command, ?array $params = null): JSONResponse
     {
-        return [sprintf('-wallet=%s', $this->name)];
+        return $this->client->jsonRPC($command, sprintf('/wallet/%s', $this->name), $params);
     }
 
     /**
@@ -62,7 +67,7 @@ class Wallet
      */
     public function getBalance(int $confirmations = 1, ?string $addr = null): string
     {
-        $params = $this->params();
+        $params = [];
         if ($addr) {
             $params[] = $addr;
         }
@@ -71,7 +76,7 @@ class Wallet
             $params[] = $confirmations;
         }
 
-        $request = $this->client->jsonRPC("getbalance", $params);
+        $request = $this->walletRPC("getbalance", $params);
         $balance = strval($request->get("result"));
         if (!preg_match('/^[0-9]+\.[0-9]+$/', $balance)) {
             throw WalletException::unexpectedResultType(__METHOD__, "float", "invalid");
@@ -88,7 +93,7 @@ class Wallet
      */
     public function getNewAddress(): string
     {
-        $request = $this->client->jsonRPC("getnewaddress", $this->params());
+        $request = $this->walletRPC("getnewaddress");
         $address = $request->get("result");
         if (!is_string($address)) {
             throw WalletException::unexpectedResultType("getnewaddress", "string", gettype($address));
