@@ -28,6 +28,8 @@ class Wallet
     private $client;
     /** @var string */
     private $name;
+    /** @var null|string */
+    private $passPhrase;
 
     /**
      * Wallet constructor.
@@ -43,6 +45,16 @@ class Wallet
 
         $this->client = $client;
         $this->name = $name;
+    }
+
+    /**
+     * @param string $passPhrase
+     * @return Wallet
+     */
+    public function passPhrase(string $passPhrase): self
+    {
+        $this->passPhrase = $passPhrase;
+        return $this;
     }
 
     /**
