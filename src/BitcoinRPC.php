@@ -124,7 +124,7 @@ class BitcoinRPC
     private function url(string $endpoint = ""): string
     {
         $protocol = $this->ssl ? "https" : "http";
-        return sprintf('%s://%s:%s/%s', $protocol, $this->host, $this->port, $endpoint);
+        return sprintf('%s://%s:%s%s', $protocol, $this->host, $this->port, $endpoint);
     }
 
     /**
@@ -147,17 +147,18 @@ class BitcoinRPC
 
     /**
      * @param string $command
+     * @param null|string $endpoint
      * @param array|null $params
      * @param null|string $method
      * @return JSONResponse
      * @throws ConnectionException
      * @throws DaemonException
      */
-    public function jsonRPC(string $command, ?array $params = null, ?string $method = 'POST'): JSONResponse
+    public function jsonRPC(string $command, ?string $endpoint = null, ?array $params = null, ?string $method = 'POST'): JSONResponse
     {
         // Prepare Json RPC Call
         $id = sprintf('%s_%d', $command, time());
-        $request = new Request($method, $this->url());
+        $request = new Request($method, $this->url($endpoint));
         $request->json(); // JSON request
 
         // Payload
