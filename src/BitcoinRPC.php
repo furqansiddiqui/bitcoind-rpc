@@ -20,6 +20,7 @@ use BitcoinRPC\Exception\BitcoinRPCException;
 use BitcoinRPC\Exception\ConnectionException;
 use BitcoinRPC\Exception\DaemonException;
 use HttpClient\Exception\HttpClientException;
+use HttpClient\Exception\ResponseException;
 use HttpClient\Request;
 use HttpClient\Response\JSONResponse;
 
@@ -174,6 +175,13 @@ class BitcoinRPC
             $this->prepare($request);
             $response = $request->send();
         } catch (HttpClientException $e) {
+            if ($e instanceof ResponseException && $e->getCode()) {
+                switch ($e->getCode()) {
+                    case 401:
+                        throw new ConnectionException('401 Unauthorized');
+                }
+            }
+
             throw new ConnectionException($e->getMessage(), $e->getCode());
         }
 
