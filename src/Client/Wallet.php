@@ -90,7 +90,7 @@ class Wallet
 
         $request = $this->walletRPC("getbalance", $params);
         $balance = strval($request->get("result"));
-        if (!preg_match('/^[0-9]+\.[0-9]+$/', $balance)) {
+        if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $balance)) {
             throw WalletException::unexpectedResultType(__METHOD__, "float", "invalid");
         }
 
