@@ -70,6 +70,27 @@ class Wallet
     }
 
     /**
+     * @param int $seconds
+     * @return bool
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     */
+    public function unlock(int $seconds): bool
+    {
+        if (!$this->passPhrase) {
+            throw new WalletException('Wallet passphrase not set');
+        }
+
+        $request = $this->walletRPC("walletpassphrase", [$this->passPhrase, $seconds]);
+        if ($request->code() !== 200) {
+            throw new WalletException('Failed to unlock wallet');
+        }
+
+        return true;
+    }
+
+    /**
      * @param int $confirmations
      * @param null|string $addr
      * @return string
