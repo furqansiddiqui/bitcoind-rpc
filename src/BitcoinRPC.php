@@ -191,7 +191,7 @@ class BitcoinRPC
         if (is_array($error)) {
             $errorCode = intval($error["code"] ?? 0);
             $errorMessage = $error["message"] ?? 'An error occurred';
-            throw new DaemonException($errorCode, $errorMessage);
+            throw new DaemonException($errorMessage, $errorCode);
         }
 
         // Result
