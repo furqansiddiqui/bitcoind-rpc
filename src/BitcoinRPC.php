@@ -196,8 +196,7 @@ class BitcoinRPC
         }
 
         // Result
-        $result = $response->get("result");
-        if (!$result) {
+        if (!$response->has("result")) {
             throw new DaemonException('No response was received');
         }
 
