@@ -71,6 +71,7 @@ class Wallet
      * @return JSONResponse
      * @throws \BitcoinRPC\Exception\ConnectionException
      * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
      */
     private function walletRPC(string $command, ?array $params = null): JSONResponse
     {
@@ -83,6 +84,7 @@ class Wallet
      * @throws WalletException
      * @throws \BitcoinRPC\Exception\ConnectionException
      * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
      */
     public function unlock(int $seconds): bool
     {
@@ -105,6 +107,7 @@ class Wallet
      * @throws WalletException
      * @throws \BitcoinRPC\Exception\ConnectionException
      * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getBalance(int $confirmations = 1, ?string $addr = null): string
     {
@@ -131,6 +134,7 @@ class Wallet
      * @throws WalletException
      * @throws \BitcoinRPC\Exception\ConnectionException
      * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getNewAddress(): string
     {

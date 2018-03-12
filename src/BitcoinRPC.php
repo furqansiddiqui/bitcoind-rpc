@@ -97,6 +97,7 @@ class BitcoinRPC
     /**
      * @param string $name
      * @return Wallet
+     * @throws Exception\WalletException
      */
     public function wallet(string $name = "wallet.dat"): Wallet
     {
@@ -119,10 +120,10 @@ class BitcoinRPC
     }
 
     /**
-     * @param string $endpoint
+     * @param null|string $endpoint
      * @return string
      */
-    private function url(string $endpoint = ""): string
+    private function url(?string $endpoint = null): string
     {
         $protocol = $this->ssl ? "https" : "http";
         return sprintf('%s://%s:%s%s', $protocol, $this->host, $this->port, $endpoint);
@@ -154,10 +155,11 @@ class BitcoinRPC
      * @return JSONResponse
      * @throws ConnectionException
      * @throws DaemonException
+     * @throws HttpClientException
      */
     public function jsonRPC(string $command, ?string $endpoint = null, ?array $params = null, ?string $method = 'POST'): JSONResponse
     {
-        // Prepare Json RPC Call
+        // Prepare JSON RPC Call
         $id = sprintf('%s_%d', $command, time());
         $request = new Request($method, $this->url($endpoint));
         $request->json(); // JSON request

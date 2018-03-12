@@ -40,6 +40,7 @@ class BlockChain
      * @throws BlockChainException
      * @throws \BitcoinRPC\Exception\ConnectionException
      * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getBlockCount(): int
     {
