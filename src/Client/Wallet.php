@@ -66,19 +66,6 @@ class Wallet
     }
 
     /**
-     * @param string $command
-     * @param array|null $params
-     * @return JSONResponse
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
-     */
-    private function walletRPC(string $command, ?array $params = null): JSONResponse
-    {
-        return $this->client->jsonRPC($command, sprintf('/wallet/%s', $this->name), $params);
-    }
-
-    /**
      * @param int $seconds
      * @return bool
      * @throws WalletException
@@ -145,5 +132,38 @@ class Wallet
         }
 
         return $address;
+    }
+
+    /**
+     * @param string $addr
+     * @param string $amount
+     * @return string
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function sendToAddress(string $addr, string $amount): string
+    {
+        $request = $this->walletRPC("sendtoaddress", [$addr, $amount]);
+        $txId = $request->get("result");
+        if (!is_string($txId)) {
+            throw WalletException::unexpectedResultType("sendtoaddress", "string", gettype($txId));
+        }
+
+        return $txId;
+    }
+
+    /**
+     * @param string $command
+     * @param array|null $params
+     * @return JSONResponse
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    private function walletRPC(string $command, ?array $params = null): JSONResponse
+    {
+        return $this->client->jsonRPC($command, sprintf('/wallet/%s', $this->name), $params);
     }
 }
