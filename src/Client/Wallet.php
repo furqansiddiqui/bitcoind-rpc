@@ -88,23 +88,23 @@ class Wallet
     }
 
     /**
-     * @param int $confirmations
      * @param null|string $addr
+     * @param int $confirmations
      * @return string
      * @throws WalletException
      * @throws \BitcoinRPC\Exception\ConnectionException
      * @throws \BitcoinRPC\Exception\DaemonException
      * @throws \HttpClient\Exception\HttpClientException
      */
-    public function getBalance(int $confirmations = 1, ?string $addr = null): string
+    public function getBalance(?string $addr = null, int $confirmations = 1): string
     {
         $params = [];
         if ($addr) {
             $params[] = $addr;
-        }
 
-        if ($confirmations > 0) {
-            $params[] = $confirmations;
+            if ($confirmations > 0) {
+                $params[] = $confirmations;
+            }
         }
 
         $request = $this->walletRPC("getbalance", $params);
