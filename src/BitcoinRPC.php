@@ -30,7 +30,7 @@ use HttpClient\Response\JSONResponse;
  */
 class BitcoinRPC
 {
-    const VERSION = "0.16.1";
+    const VERSION = "0.16.2";
     const SCALE = 8;
 
     /** @var string */
