@@ -37,7 +37,7 @@ class Wallet
      * @param string $name
      * @throws WalletException
      */
-    public function __construct(BitcoinRPC $client, string $name)
+    public function __construct(BitcoinRPC $client, string $name = "wallet.dat")
     {
         if (!preg_match('/[\w\-]+(\.[a-z]{2,8})?/', $name)) {
             throw new WalletException('Invalid wallet file/name');
@@ -117,6 +117,35 @@ class Wallet
     }
 
     /**
+     * @param int $number
+     * @return string
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getBlockHash(int $number): string
+    {
+        $request = $this->walletRPC("getblockhash", [$number]);
+        $hash = $request->get("result");
+        if (!is_string($hash) || !preg_match('/^[a-f0-9]{64}$/i', $hash)) {
+            throw WalletException::unexpectedResultType("getblockhash", "hash", gettype($hash));
+        }
+
+        return $hash;
+    }
+
+    public function getBlock(string $hash)
+    {
+
+    }
+
+    public function getBlockByNumber(int $number)
+    {
+
+    }
+
+    /**
      * @return string
      * @throws WalletException
      * @throws \BitcoinRPC\Exception\ConnectionException
@@ -132,6 +161,25 @@ class Wallet
         }
 
         return $address;
+    }
+
+    /**
+     * @param string $txHash
+     * @return array
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getTransaction(string $txHash): array
+    {
+        $request = $this->walletRPC("gettransaction", [$txHash]);
+        $tx = $request->get("result");
+        if (!is_array($tx)) {
+            throw WalletException::unexpectedResultType("gettransaction", "object", gettype($tx));
+        }
+
+        return $tx;
     }
 
     /**
