@@ -16,7 +16,6 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\WalletException;
-use BitcoinRPC\Response\Block;
 use HttpClient\Response\JSONResponse;
 
 /**
@@ -115,59 +114,6 @@ class Wallet
         }
 
         return bcmul($balance, "1", BitcoinRPC::SCALE);
-    }
-
-    /**
-     * @param int $number
-     * @return string
-     * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
-     */
-    public function getBlockHash(int $number): string
-    {
-        $request = $this->walletRPC("getblockhash", [$number]);
-        $hash = $request->get("result");
-        if (!is_string($hash) || !preg_match('/^[a-f0-9]{64}$/i', $hash)) {
-            throw WalletException::unexpectedResultType("getblockhash", "hash", gettype($hash));
-        }
-
-        return $hash;
-    }
-
-    /**
-     * @param string $hash
-     * @return Block
-     * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \HttpClient\Exception\HttpClientException
-     */
-    public function getBlock(string $hash): Block
-    {
-        $request = $this->walletRPC("getblock", [$hash]);
-        $block = $request->get("result");
-        if (!is_array($block) || !count($block)) {
-            throw WalletException::unexpectedResultType("getblock", "object", gettype($block));
-        }
-
-        return new Block($block);
-    }
-
-    /**
-     * @param int $number
-     * @return Block
-     * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \HttpClient\Exception\HttpClientException
-     */
-    public function getBlockByNumber(int $number): Block
-    {
-        return $this->getBlock($this->getBlockHash($number));
     }
 
     /**

@@ -16,6 +16,7 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\BlockChainException;
+use BitcoinRPC\Response\Block;
 
 /**
  * Class BlockChain
@@ -51,5 +52,58 @@ class BlockChain
         }
 
         return $blockCount;
+    }
+
+    /**
+     * @param int $number
+     * @return string
+     * @throws BlockChainException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getBlockHash(int $number): string
+    {
+        $request = $this->client->jsonRPC("getblockhash", null, [$number]);
+        $hash = $request->get("result");
+        if (!is_string($hash) || !preg_match('/^[a-f0-9]{64}$/i', $hash)) {
+            throw BlockChainException::unexpectedResultType("getblockhash", "hash", gettype($hash));
+        }
+
+        return $hash;
+    }
+
+    /**
+     * @param string $hash
+     * @return Block
+     * @throws BlockChainException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getBlock(string $hash): Block
+    {
+        $request = $this->client->jsonRPC("getblock", null, [$hash]);
+        $block = $request->get("result");
+        if (!is_array($block) || !count($block)) {
+            throw BlockChainException::unexpectedResultType("getblock", "object", gettype($block));
+        }
+
+        return new Block($block);
+    }
+
+    /**
+     * @param int $number
+     * @return Block
+     * @throws BlockChainException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getBlockByNumber(int $number): Block
+    {
+        return $this->getBlock($this->getBlockHash($number));
     }
 }
