@@ -17,6 +17,7 @@ namespace BitcoinRPC\Client;
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\BlockChainException;
 use BitcoinRPC\Response\Block;
+use BitcoinRPC\Response\RawTransaction;
 
 /**
  * Class BlockChain
@@ -91,6 +92,26 @@ class BlockChain
         }
 
         return new Block($block);
+    }
+
+    /**
+     * @param string $txId
+     * @return RawTransaction
+     * @throws BlockChainException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getRawTransaction(string $txId): RawTransaction
+    {
+        $request = $this->client->jsonRPC("getrawtransaction", null, [$txId]);
+        $rawTx = $request->get("result");
+        if (!is_array($rawTx) || !count($rawTx)) {
+            throw BlockChainException::unexpectedResultType("getrawtransaction", "object", gettype($rawTx));
+        }
+
+        return new RawTransaction($rawTx);
     }
 
     /**
