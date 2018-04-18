@@ -16,6 +16,7 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\WalletException;
+use BitcoinRPC\Response\Block;
 use HttpClient\Response\JSONResponse;
 
 /**
@@ -135,14 +136,38 @@ class Wallet
         return $hash;
     }
 
-    public function getBlock(string $hash)
+    /**
+     * @param string $hash
+     * @return Block
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getBlock(string $hash): Block
     {
+        $request = $this->walletRPC("getblock", [$hash]);
+        $block = $request->get("result");
+        if (!is_array($block) || !count($block)) {
+            throw WalletException::unexpectedResultType("getblock", "object", gettype($block));
+        }
 
+        return new Block($block);
     }
 
-    public function getBlockByNumber(int $number)
+    /**
+     * @param int $number
+     * @return Block
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function getBlockByNumber(int $number): Block
     {
-
+        return $this->getBlock($this->getBlockHash($number));
     }
 
     /**
