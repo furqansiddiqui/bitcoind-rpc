@@ -105,7 +105,7 @@ class BlockChain
      */
     public function getRawTransaction(string $txId): RawTransaction
     {
-        $request = $this->client->jsonRPC("getrawtransaction", null, [$txId]);
+        $request = $this->client->jsonRPC("getrawtransaction", null, [$txId, 1]);
         $rawTx = $request->get("result");
         if (!is_array($rawTx) || !count($rawTx)) {
             throw BlockChainException::unexpectedResultType("getrawtransaction", "object", gettype($rawTx));
