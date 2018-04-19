@@ -47,7 +47,7 @@ class Block
     public $time;
     /** @var int */
     public $medianTime;
-    /** @var int */
+    /** @var mixed|null */
     public $nonce;
     /** @var mixed|null */
     public $bits;
@@ -117,13 +117,6 @@ class Block
             throw $this->unexpectedParamValue("time", "int", gettype($this->time));
         } elseif (!is_int($this->medianTime)) {
             throw $this->unexpectedParamValue("medianTime", "int", gettype($this->medianTime));
-        }
-
-        // Nonce
-        if (!is_int($this->nonce)) {
-            if ($this->height !== 1) { // First block doesn't have nonce
-                throw $this->unexpectedParamValue("nonce", "int", gettype($this->nonce));
-            }
         }
 
         // Difficulty
