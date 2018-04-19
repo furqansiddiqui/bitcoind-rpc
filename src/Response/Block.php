@@ -121,7 +121,9 @@ class Block
 
         // Nonce
         if (!is_int($this->nonce)) {
-            throw $this->unexpectedParamValue("nonce", "int", gettype($this->nonce));
+            if ($this->height !== 1) { // First block doesn't have nonce
+                throw $this->unexpectedParamValue("nonce", "int", gettype($this->nonce));
+            }
         }
 
         // Difficulty
