@@ -94,14 +94,14 @@ class RawTransaction
         }
 
         // Confirmations
-        if (!is_int($this->confirmations)   &&  !is_null($this->confirmations)) {
+        if (!is_int($this->confirmations) && !is_null($this->confirmations)) {
             throw $this->unexpectedParamValue("confirmations", "int|null", gettype($this->confirmations));
         }
 
         // Time & BlockTime
-        if (!is_int($this->time)) {
-            throw $this->unexpectedParamValue("time", "int", gettype($this->time));
-        } elseif (!is_int($this->blockTime) &&  !is_null($this->blockTime)) {
+        if (!is_int($this->time) && !is_null($this->time)) {
+            throw $this->unexpectedParamValue("time", "int|null", gettype($this->time));
+        } elseif (!is_int($this->blockTime) && !is_null($this->blockTime)) {
             throw $this->unexpectedParamValue("blockTime", "int|null", gettype($this->blockTime));
         }
 
