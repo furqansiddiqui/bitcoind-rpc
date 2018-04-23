@@ -76,8 +76,14 @@ class RawTransaction
             throw $this->unexpectedParamValue("txId", "hash64", gettype($this->txId));
         } elseif (!Validator::Hash($this->hash, 64)) {
             throw $this->unexpectedParamValue("hash", "hash64", gettype($this->hash));
-        } elseif (!Validator::Hash($this->blockHash, 64)) {
-            throw $this->unexpectedParamValue("blockHash", "hash64", gettype($this->blockHash));
+        } elseif (!is_string($this->blockHash) && !is_null($this->blockHash)) {
+            throw $this->unexpectedParamValue("blockHash", "hash64|null", gettype($this->hash));
+        }
+
+        if (is_string($this->blockHash)) {
+            if (!Validator::Hash($this->blockHash, 64)) {
+                throw $this->unexpectedParamValue("blockHash", "hash64", gettype($this->blockHash));
+            }
         }
 
         // Size & vSize
