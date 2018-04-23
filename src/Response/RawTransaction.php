@@ -39,13 +39,13 @@ class RawTransaction
     public $vIn;
     /** @var null|array */
     public $vOut;
-    /** @var string */
+    /** @var string|null */
     public $blockHash;
-    /** @var int */
+    /** @var int|null */
     public $confirmations;
     /** @var int */
     public $time;
-    /** @var int */
+    /** @var int|null */
     public $blockTime;
 
     /**
@@ -94,15 +94,15 @@ class RawTransaction
         }
 
         // Confirmations
-        if (!is_int($this->confirmations)) {
-            throw $this->unexpectedParamValue("confirmations", "int", gettype($this->confirmations));
+        if (!is_int($this->confirmations)   &&  !is_null($this->confirmations)) {
+            throw $this->unexpectedParamValue("confirmations", "int|null", gettype($this->confirmations));
         }
 
         // Time & BlockTime
         if (!is_int($this->time)) {
             throw $this->unexpectedParamValue("time", "int", gettype($this->time));
-        } elseif (!is_int($this->blockTime)) {
-            throw $this->unexpectedParamValue("blockTime", "int", gettype($this->blockTime));
+        } elseif (!is_int($this->blockTime) &&  !is_null($this->blockTime)) {
+            throw $this->unexpectedParamValue("blockTime", "int|null", gettype($this->blockTime));
         }
 
         // Inputs
