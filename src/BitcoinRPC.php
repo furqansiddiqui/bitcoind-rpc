@@ -101,12 +101,9 @@ class BitcoinRPC
      */
     public function wallet(?string $name = "wallet.dat"): Wallet
     {
-        $key = "_default";
-        if ($name) {
-            $key = strtolower($name);
-            if (array_key_exists($key, $this->wallets)) {
-                return $this->wallets[$key];
-            }
+        $key = $name ? strtolower($name) : "_default";
+        if (array_key_exists($key, $this->wallets)) {
+            return $this->wallets[$key];
         }
 
         $wallet = new Wallet($this, $name);
