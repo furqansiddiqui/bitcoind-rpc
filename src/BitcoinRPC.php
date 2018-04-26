@@ -95,15 +95,18 @@ class BitcoinRPC
     }
 
     /**
-     * @param string $name
+     * @param null|string $name
      * @return Wallet
      * @throws Exception\WalletException
      */
-    public function wallet(string $name = "wallet.dat"): Wallet
+    public function wallet(?string $name = "wallet.dat"): Wallet
     {
-        $key = strtolower($name);
-        if (array_key_exists($key, $this->wallets)) {
-            return $this->wallets[$key];
+        $key = "_default";
+        if ($name) {
+            $key = strtolower($name);
+            if (array_key_exists($key, $this->wallets)) {
+                return $this->wallets[$key];
+            }
         }
 
         $wallet = new Wallet($this, $name);

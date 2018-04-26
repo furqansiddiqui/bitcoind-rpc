@@ -26,7 +26,7 @@ class Wallet
 {
     /** @var BitcoinRPC */
     private $client;
-    /** @var string */
+    /** @var null|string */
     private $name;
     /** @var null|string */
     private $passPhrase;
@@ -34,12 +34,12 @@ class Wallet
     /**
      * Wallet constructor.
      * @param BitcoinRPC $client
-     * @param string $name
+     * @param null|string $name
      * @throws WalletException
      */
-    public function __construct(BitcoinRPC $client, string $name = "wallet.dat")
+    public function __construct(BitcoinRPC $client, ?string $name = "wallet.dat")
     {
-        if (!preg_match('/[\w\-]+(\.[a-z]{2,8})?/', $name)) {
+        if (is_string($name) && !preg_match('/[\w\-]+(\.[a-z]{2,8})?/', $name)) {
             throw new WalletException('Invalid wallet file/name');
         }
 
@@ -183,6 +183,11 @@ class Wallet
      */
     private function walletRPC(string $command, ?array $params = null): JSONResponse
     {
-        return $this->client->jsonRPC($command, sprintf('/wallet/%s', $this->name), $params);
+        $endpoint = null;
+        if ($this->name) {
+            $endpoint = sprintf('/wallet/%s', $this->name);
+        }
+
+        return $this->client->jsonRPC($command, $endpoint, $params);
     }
 }
