@@ -97,11 +97,6 @@ class Block
             throw $this->unexpectedParamValue("confirmations", "int", gettype($this->confirmations));
         }
 
-        // Weight
-        if (!is_int($this->weight)) {
-            throw $this->unexpectedParamValue("weight", "int", gettype($this->weight));
-        }
-
         // Height
         if (!is_int($this->height)) {
             throw $this->unexpectedParamValue("height", "int", gettype($this->height));

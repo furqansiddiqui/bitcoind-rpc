@@ -89,8 +89,6 @@ class RawTransaction
         // Size & vSize
         if (!is_int($this->size)) {
             throw $this->unexpectedParamValue("size", "int", gettype($this->size));
-        } elseif (!is_int($this->vSize)) {
-            throw $this->unexpectedParamValue("vSize", "int", gettype($this->vSize));
         }
 
         // Confirmations
