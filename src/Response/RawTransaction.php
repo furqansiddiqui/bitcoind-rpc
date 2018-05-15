@@ -74,10 +74,10 @@ class RawTransaction
         // TxID and Hash and BlockHash
         if (!Validator::Hash($this->txId, 64)) {
             throw $this->unexpectedParamValue("txId", "hash64", gettype($this->txId));
-        } elseif (!Validator::Hash($this->hash, 64)) {
-            throw $this->unexpectedParamValue("hash", "hash64", gettype($this->hash));
-        } elseif (!is_string($this->blockHash) && !is_null($this->blockHash)) {
-            throw $this->unexpectedParamValue("blockHash", "hash64|null", gettype($this->hash));
+        }
+
+        if (!is_string($this->blockHash) && !is_null($this->blockHash)) {
+            throw $this->unexpectedParamValue("blockHash", "hash64|null", gettype($this->blockHash));
         }
 
         if (is_string($this->blockHash)) {
