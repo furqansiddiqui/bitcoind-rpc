@@ -46,7 +46,7 @@ class Validator
 
         // Minimum validation
         // Allow ":" for BCH addresses
-        if (!preg_match('/^[a-z0-9\:]{30,60}$/', $address)) {
+        if (!preg_match('/^[a-z0-9\:]{30,60}$/i', $address)) {
             return false;
         }
 
