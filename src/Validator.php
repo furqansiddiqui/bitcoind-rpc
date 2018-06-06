@@ -33,4 +33,42 @@ class Validator
 
         return false;
     }
+
+    /**
+     * @param $address
+     * @return bool
+     */
+    public static function Address($address): bool
+    {
+        if (!is_string($address)) {
+            return false;
+        }
+
+        // Minimum validation
+        // Allow ":" for BCH addresses
+        if (!preg_match('/^[a-z0-9\:]{30,60}$/', $address)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $amount
+     * @param bool $signed
+     * @return bool
+     */
+    public static function BcAmount($amount, bool $signed = false): bool
+    {
+        if (!is_string($amount)) {
+            return false;
+        }
+
+        $pattern = '[0-9]+(\.[0-9]+)?';
+        if ($signed) {
+            $pattern = '\-?' . $pattern;
+        }
+
+        return preg_match('/^' . $pattern . '$/', $amount) ? true : false;
+    }
 }

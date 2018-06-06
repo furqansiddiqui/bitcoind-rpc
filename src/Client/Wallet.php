@@ -206,6 +206,27 @@ class Wallet
     }
 
     /**
+     * @param array $inputs
+     * @param array $outputs
+     * @return string
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function createRawTransaction(array $inputs, array $outputs): string
+    {
+        $request = $this->walletRPC("createrawtransaction", [$inputs, $outputs]);
+        $encodedRawTransaction = $request->get("result");
+        if (!is_string($encodedRawTransaction)) {
+            throw WalletException::unexpectedResultType("createrawtransaction", "string", gettype($encodedRawTransaction));
+        }
+
+        return $encodedRawTransaction;
+    }
+
+
+    /**
      * @param string $command
      * @param array|null $params
      * @return JSONResponse
