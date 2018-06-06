@@ -20,4 +20,15 @@ namespace BitcoinRPC\Exception;
  */
 class ResponseObjectException extends BitcoinRPCException
 {
+    /**
+     * @param string $class
+     * @param string $errorMessage
+     * @return ResponseObjectException
+     */
+    public static function ObjectConstructError(string $class, string $errorMessage): self
+    {
+        return new self(
+            sprintf('Failed to construct response object "%s": %s', $class, $errorMessage)
+        );
+    }
 }

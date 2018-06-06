@@ -16,6 +16,7 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\WalletException;
+use BitcoinRPC\Response\UnspentOutputs;
 use HttpClient\Response\JSONResponse;
 
 /**
@@ -171,6 +172,37 @@ class Wallet
         }
 
         return $txId;
+    }
+
+    /**
+     * @param int $minConfirmations
+     * @param int|null $maxConfirmations
+     * @param array|null $addresses
+     * @return UnspentOutputs
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function listUnspent(int $minConfirmations = 1, ?int $maxConfirmations = null, ?array $addresses = null): UnspentOutputs
+    {
+        $args = [$minConfirmations];
+        if ($maxConfirmations) {
+            $args[] = $maxConfirmations;
+        }
+
+        if ($addresses) {
+            $args[] = $addresses;
+        }
+
+        $request = $this->walletRPC("listunspent", $args);
+        $outputs = $request->get("result");
+        if (!is_array($outputs)) {
+            throw WalletException::unexpectedResultType("listunspent", "array", gettype($outputs));
+        }
+
+        return new UnspentOutputs($outputs);
     }
 
     /**
