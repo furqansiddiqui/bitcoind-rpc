@@ -241,8 +241,8 @@ class Wallet
     {
         $request = $this->walletRPC("signrawtransaction", [$encodedRawTransaction]);
         $signedTx = $request->get("result");
-        if (!is_string($signedTx)) {
-            throw WalletException::unexpectedResultType("signrawtransaction", "string", gettype($signedTx));
+        if (!is_array($signedTx)) {
+            throw WalletException::unexpectedResultType("signrawtransaction", "array", gettype($signedTx));
         }
 
         return new SignedRawTransaction($signedTx);
