@@ -16,7 +16,9 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\WalletException;
+use BitcoinRPC\Response\SignedRawTransaction;
 use BitcoinRPC\Response\UnspentOutputs;
+use BitcoinRPC\Validator;
 use HttpClient\Response\JSONResponse;
 
 /**
@@ -225,6 +227,44 @@ class Wallet
         return $encodedRawTransaction;
     }
 
+    /**
+     * @param string $encodedRawTransaction
+     * @return SignedRawTransaction
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function signRawTransaction(string $encodedRawTransaction): SignedRawTransaction
+    {
+        $request = $this->walletRPC("signrawtransaction", [$encodedRawTransaction]);
+        $signedTx = $request->get("result");
+        if (!is_string($signedTx)) {
+            throw WalletException::unexpectedResultType("signrawtransaction", "string", gettype($signedTx));
+        }
+
+        return new SignedRawTransaction($signedTx);
+    }
+
+    /**
+     * @param string $signedTransaction
+     * @return string
+     * @throws WalletException
+     * @throws \BitcoinRPC\Exception\ConnectionException
+     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function sendRawTransaction(string $signedTransaction): string
+    {
+        $request = $this->walletRPC("sendrawtransaction", [$signedTransaction]);
+        $txId = $request->get("result");
+        if (!is_string($txId) || !Validator::Hash($txId, 64)) {
+            throw WalletException::unexpectedResultType("sendrawtransaction", "hash64", gettype($txId));
+        }
+
+        return $txId;
+    }
 
     /**
      * @param string $command

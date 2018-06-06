@@ -89,6 +89,7 @@ class PrepareTransaction
             throw new PrepareTransactionException('Invalid value for transaction fee');
         }
 
+        $this->fee = $fee;
         return $this;
     }
 
@@ -214,6 +215,15 @@ class PrepareTransaction
 
         // Create Raw Transaction
         $rawTransaction = $this->wallet->createRawTransaction($txInputs, $txOutputs);
-        return "";
+
+        // Sign created Transaction
+        $signedTx = $this->wallet->signRawTransaction($rawTransaction);
+        if ($signedTx->complete !== true) {
+            throw new PrepareTransactionException('Signed TX is not complete, requires external keys');
+        }
+
+        // Send transaction
+        $txId = $this->wallet->sendRawTransaction($signedTx->hex);
+        return $txId;
     }
 }
