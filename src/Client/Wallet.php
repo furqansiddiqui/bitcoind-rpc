@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
+use BitcoinRPC\Client\Wallet\PrepareTransaction;
 use BitcoinRPC\Exception\WalletException;
 use BitcoinRPC\Response\SignedRawTransaction;
 use BitcoinRPC\Response\UnspentOutputs;
@@ -264,6 +265,14 @@ class Wallet
         }
 
         return $txId;
+    }
+
+    /**
+     * @return PrepareTransaction
+     */
+    public function prepareTransaction(): PrepareTransaction
+    {
+        return new PrepareTransaction($this);
     }
 
     /**
