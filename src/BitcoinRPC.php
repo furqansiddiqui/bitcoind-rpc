@@ -17,12 +17,8 @@ namespace BitcoinRPC;
 use BitcoinRPC\Client\BlockChain;
 use BitcoinRPC\Client\Wallet;
 use BitcoinRPC\Exception\BitcoinRPCException;
-use BitcoinRPC\Exception\ConnectionException;
-use BitcoinRPC\Exception\DaemonException;
-use HttpClient\Exception\HttpClientException;
-use HttpClient\Exception\ResponseException;
-use HttpClient\Request;
-use HttpClient\Response\JSONResponse;
+use BitcoinRPC\Http\AbstractJSONClient;
+use BitcoinRPC\Http\DefaultClient;
 
 /**
  * Class BitcoinRPC
@@ -31,67 +27,64 @@ use HttpClient\Response\JSONResponse;
 class BitcoinRPC
 {
     public const VERSION = "0.16.2";
-    const SCALE = 8;
+    public const SCALE = 8;
 
-    /** @var string */
-    private $host;
-    /** @var int */
-    private $port;
-    /** @var string */
-    private $username;
-    /** @var string */
-    private $password;
-    /** @var bool */
-    private $ssl;
-    /** @var null|string */
-    private $sslCA;
-
-    /** @var Wallet */
-    private $wallets;
+    /** @var AbstractJSONClient */
+    private $_jsonRPC_client;
+    /** @var array */
+    private $_wallets;
     /** @var BlockChain */
-    private $blockChain;
+    private $_blockChain;
+
+    /**
+     * @param string $host
+     * @param int $port
+     * @return BitcoinRPC
+     * @throws BitcoinRPCException
+     * @throws \HttpClient\Exception\JSON_RPC_Exception
+     */
+    public static function Node(string $host, int $port): self
+    {
+        $jsonRPC_Client = new DefaultClient($host, $port);
+        return new self($jsonRPC_Client);
+    }
 
     /**
      * BitcoinRPC constructor.
-     * @param string $host
-     * @param int $port
-     * @param string $username
-     * @param string $password
+     * @param AbstractJSONClient $jsonRPC_client
      * @throws BitcoinRPCException
      */
-    public function __construct(string $host, int $port, string $username, string $password)
+    public function __construct(AbstractJSONClient $jsonRPC_client)
     {
         if (!extension_loaded("bcmath")) {
             throw new BitcoinRPCException('Bitcoin RPC client requires "bcmath" extension');
         }
 
-        $this->host = $host;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
-        $this->ssl = false;
-        $this->wallets = [];
-        $this->blockChain = new BlockChain($this);
+        $this->_jsonRPC_client = $jsonRPC_client;
+        $this->_wallets = [];
+        $this->_blockChain = new BlockChain($this);
     }
 
     /**
-     * @param null|string $caPath
+     * @param string $username
+     * @param string $password
      * @return BitcoinRPC
-     * @throws BitcoinRPCException
      */
-    public function ssl(?string $caPath = null): self
+    public function auth(string $username, string $password): self
     {
-        $this->ssl = true;
-        if ($caPath) {
-            $caPath = realpath($caPath);
-            if (!$caPath || !is_readable($caPath)) {
-                throw new BitcoinRPCException('SSL CA path not found or not readable');
-            }
-
-            $this->sslCA = $caPath;
-        }
+        $this->_jsonRPC_client->auth()
+            ->username($username)
+            ->password($password);
 
         return $this;
+    }
+
+    /**
+     * @return AbstractJSONClient
+     */
+    public function jsonRPC_client(): AbstractJSONClient
+    {
+        return $this->_jsonRPC_client;
     }
 
     /**
@@ -102,12 +95,12 @@ class BitcoinRPC
     public function wallet(?string $name = "wallet.dat"): Wallet
     {
         $key = $name ? strtolower($name) : "_default";
-        if (array_key_exists($key, $this->wallets)) {
-            return $this->wallets[$key];
+        if (array_key_exists($key, $this->_wallets)) {
+            return $this->_wallets[$key];
         }
 
         $wallet = new Wallet($this, $name);
-        $this->wallets[$key] = $wallet;
+        $this->_wallets[$key] = $wallet;
         return $wallet;
     }
 
@@ -116,100 +109,6 @@ class BitcoinRPC
      */
     public function blockChain(): BlockChain
     {
-        return $this->blockChain;
-    }
-
-    /**
-     * @param null|string $endpoint
-     * @return string
-     */
-    private function url(?string $endpoint = null): string
-    {
-        $protocol = $this->ssl ? "https" : "http";
-        return sprintf('%s://%s:%s%s', $protocol, $this->host, $this->port, $endpoint);
-    }
-
-    /**
-     * @param Request $request
-     * @return Request
-     * @throws \HttpClient\Exception\SSLException
-     */
-    private function prepare(Request $request): Request
-    {
-        $request->authentication()->basic($this->username, $this->password);
-        if ($this->ssl) {
-            $request->ssl()->verify(true);
-            if ($this->sslCA) {
-                $request->ssl()->certificateAuthority($this->sslCA);
-            }
-        }
-
-        return $request;
-    }
-
-    /**
-     * @param string $command
-     * @param null|string $endpoint
-     * @param array|null $params
-     * @param null|string $method
-     * @return JSONResponse
-     * @throws ConnectionException
-     * @throws DaemonException
-     * @throws HttpClientException
-     */
-    public function jsonRPC(string $command, ?string $endpoint = null, ?array $params = null, ?string $method = 'POST'): JSONResponse
-    {
-        // Prepare JSON RPC Call
-        $id = sprintf('%s_%d', $command, time());
-        $request = new Request($method, $this->url($endpoint));
-        $request->json(); // JSON request
-
-        // Payload
-        $request->payload([
-            "jsonrpc" => "1.0",
-            "id" => $id,
-            "method" => $command,
-            "params" => $params ?? []
-        ]);
-
-        // Send JSON RPC Request to Bitcoin daemon
-        try {
-            $this->prepare($request);
-            $response = $request->send();
-        } catch (HttpClientException $e) {
-            if ($e instanceof ResponseException && $e->getCode()) {
-                switch ($e->getCode()) {
-                    case 401:
-                        throw new ConnectionException('401 Unauthorized');
-                }
-            }
-
-            throw new ConnectionException($e->getMessage(), $e->getCode());
-        }
-
-        // Is a JSONResponse?
-        if (!$response instanceof JSONResponse) {
-            throw new ConnectionException(sprintf('Expected a JSONResponse, got "%s"', get_class($response)));
-        }
-
-        // Cross-check response ID with request ID
-        if ($response->get("id") !== $id) {
-            throw new DaemonException('Response does not belong to sent request');
-        }
-
-        // Check for Error
-        $error = $response->get("error");
-        if (is_array($error)) {
-            $errorCode = intval($error["code"] ?? 0);
-            $errorMessage = $error["message"] ?? 'An error occurred';
-            throw new DaemonException($errorMessage, $errorCode);
-        }
-
-        // Result
-        if (!$response->has("result")) {
-            throw new DaemonException('No response was received');
-        }
-
-        return $response;
+        return $this->_blockChain;
     }
 }
