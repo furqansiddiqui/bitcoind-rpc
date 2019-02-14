@@ -147,11 +147,9 @@ class PrepareTransaction
 
     /**
      * @return string
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
+     * @throws PrepareTransactionException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
      * @throws \BitcoinRPC\Exception\WalletException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function send(): string
     {
