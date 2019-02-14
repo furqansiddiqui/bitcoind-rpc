@@ -19,4 +19,22 @@ namespace BitcoinRPC\Exception;
  */
 class BitcoinRPCException extends \Exception
 {
+    /**
+     * @param string $method
+     * @param string|null $expected
+     * @param string|null $got
+     * @return string
+     */
+    protected static function unexpectedMethodResultTypeString(string $method, ?string $expected = null, ?string $got = null): string
+    {
+        $message = sprintf('Method "%s" unexpected result data type', $method);
+        if ($expected) {
+            $message .= sprintf(', expected "%s"', $expected);
+            if ($got) {
+                $message .= sprintf(', got "%s"', $got);
+            }
+        }
+
+        return $message;
+    }
 }

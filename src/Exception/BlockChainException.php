@@ -26,15 +26,8 @@ class BlockChainException extends BitcoinRPCException
      * @param string $got
      * @return BlockChainException
      */
-    public static function unexpectedResultType(string $method, string $expected, string $got): self
+    public static function unexpectedResultType(string $method, ?string $expected = null, ?string $got = null): self
     {
-        return new self(
-            sprintf(
-                'Method [%1$s] expects result type %2$s, got %3$s',
-                $method,
-                strtoupper($expected),
-                strtoupper($got)
-            )
-        );
+        return new self(parent::unexpectedMethodResultTypeString($method, $expected, $got));
     }
 }

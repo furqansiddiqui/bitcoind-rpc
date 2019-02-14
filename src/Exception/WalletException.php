@@ -21,14 +21,12 @@ class WalletException extends BitcoinRPCException
 {
     /**
      * @param string $method
-     * @param string $expected
-     * @param string $got
+     * @param string|null $expected
+     * @param string|null $got
      * @return WalletException
      */
-    public static function unexpectedResultType(string $method, string $expected, string $got): self
+    public static function unexpectedResultType(string $method, ?string $expected = null, ?string $got = null): self
     {
-        return new self(
-            sprintf('Method [%s] expects result type %s, got %s', $method, strtoupper($expected), strtoupper($got))
-        );
+        return new self(parent::unexpectedMethodResultTypeString($method, $expected, $got));
     }
 }
