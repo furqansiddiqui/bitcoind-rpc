@@ -17,10 +17,10 @@ namespace BitcoinRPC\Client;
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Client\Wallet\PrepareTransaction;
 use BitcoinRPC\Exception\WalletException;
+use BitcoinRPC\Http\DaemonResponse;
 use BitcoinRPC\Response\SignedRawTransaction;
 use BitcoinRPC\Response\UnspentOutputs;
 use BitcoinRPC\Validator;
-use HttpClient\Response\JSONResponse;
 
 /**
  * Class Wallet
@@ -29,7 +29,7 @@ use HttpClient\Response\JSONResponse;
 class Wallet
 {
     /** @var BitcoinRPC */
-    private $client;
+    private $bitcoinRPC;
     /** @var null|string */
     private $name;
     /** @var null|string */
@@ -47,7 +47,7 @@ class Wallet
             throw new WalletException('Invalid wallet file/name');
         }
 
-        $this->client = $client;
+        $this->bitcoinRPC = $client;
         $this->name = $name;
     }
 
@@ -73,9 +73,6 @@ class Wallet
      * @param int $seconds
      * @return bool
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function unlock(int $seconds): bool
     {
@@ -83,8 +80,9 @@ class Wallet
             throw new WalletException('Wallet passphrase not set');
         }
 
-        $request = $this->walletRPC("walletpassphrase", [$this->passPhrase, $seconds]);
-        if ($request->code() !== 200) {
+
+        $res = $this->walletRPC("walletpassphrase", [$this->passPhrase, $seconds]);
+        if ($res->httpStatusCode !== 200) {
             throw new WalletException('Failed to unlock wallet');
         }
 
@@ -92,13 +90,10 @@ class Wallet
     }
 
     /**
-     * @param null|string $addr
+     * @param string|null $addr
      * @param int $confirmations
      * @return string
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getBalance(?string $addr = null, int $confirmations = 1): string
     {
@@ -111,50 +106,41 @@ class Wallet
             }
         }
 
-        $request = $this->walletRPC("getbalance", $params);
-        $balance = strval($request->get("result"));
-        if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $balance)) {
-            throw WalletException::unexpectedResultType(__METHOD__, "float", "invalid");
+        $res = $this->walletRPC("getBalance", $params);
+        if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $res->result)) {
+            throw WalletException::unexpectedResultType("getBalance", "balance");
         }
 
-        return bcmul($balance, "1", BitcoinRPC::SCALE);
+        return bcmul($res->result, "1", BitcoinRPC::SCALE);
     }
 
     /**
      * @return string
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getNewAddress(): string
     {
-        $request = $this->walletRPC("getnewaddress");
-        $address = $request->get("result");
-        if (!is_string($address)) {
-            throw WalletException::unexpectedResultType("getnewaddress", "string", gettype($address));
+        $res = $this->walletRPC("getNewAddress");
+        if (!is_string($res->result)) {
+            throw WalletException::unexpectedResultType("getNewAddress", "String", gettype($res->result));
         }
 
-        return $address;
+        return $res->result;
     }
 
     /**
      * @param string $txHash
      * @return array
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getTransaction(string $txHash): array
     {
-        $request = $this->walletRPC("gettransaction", [$txHash]);
-        $tx = $request->get("result");
-        if (!is_array($tx)) {
-            throw WalletException::unexpectedResultType("gettransaction", "object", gettype($tx));
+        $res = $this->walletRPC("getTransaction", [$txHash]);
+        if (!is_array($res->result)) {
+            throw WalletException::unexpectedResultType("getTransaction", "Object", gettype($res->result));
         }
 
-        return $tx;
+        return $res->result;
     }
 
     /**
@@ -162,19 +148,15 @@ class Wallet
      * @param string $amount
      * @return string
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function sendToAddress(string $addr, string $amount): string
     {
-        $request = $this->walletRPC("sendtoaddress", [$addr, $amount]);
-        $txId = $request->get("result");
-        if (!is_string($txId)) {
-            throw WalletException::unexpectedResultType("sendtoaddress", "string", gettype($txId));
+        $res = $this->walletRPC("sendtoaddress", [$addr, $amount]);
+        if (!is_string($res->result)) {
+            throw WalletException::unexpectedResultType("sendtoaddress", "String", gettype($res->result));
         }
 
-        return $txId;
+        return $res->result;
     }
 
     /**
@@ -183,10 +165,7 @@ class Wallet
      * @param array|null $addresses
      * @return UnspentOutputs
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function listUnspent(int $minConfirmations = 1, ?int $maxConfirmations = null, ?array $addresses = null): UnspentOutputs
     {
@@ -199,13 +178,12 @@ class Wallet
             $args[] = $addresses;
         }
 
-        $request = $this->walletRPC("listunspent", $args);
-        $outputs = $request->get("result");
-        if (!is_array($outputs)) {
-            throw WalletException::unexpectedResultType("listunspent", "array", gettype($outputs));
+        $res = $this->walletRPC("listunspent", $args);
+        if (!is_array($res->result)) {
+            throw WalletException::unexpectedResultType("listunspent", "Object", gettype($res->result));
         }
 
-        return new UnspentOutputs($outputs);
+        return new UnspentOutputs($res->result);
     }
 
     /**
@@ -213,58 +191,46 @@ class Wallet
      * @param array $outputs
      * @return string
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function createRawTransaction(array $inputs, array $outputs): string
     {
-        $request = $this->walletRPC("createrawtransaction", [$inputs, $outputs]);
-        $encodedRawTransaction = $request->get("result");
-        if (!is_string($encodedRawTransaction)) {
-            throw WalletException::unexpectedResultType("createrawtransaction", "string", gettype($encodedRawTransaction));
+        $res = $this->walletRPC("createRawTransaction", [$inputs, $outputs]);
+        if (!is_string($res->result)) {
+            throw WalletException::unexpectedResultType("createRawTransaction", "String", gettype($res->result));
         }
 
-        return $encodedRawTransaction;
+        return $res->result;
     }
 
     /**
      * @param string $encodedRawTransaction
      * @return SignedRawTransaction
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function signRawTransaction(string $encodedRawTransaction): SignedRawTransaction
     {
-        $request = $this->walletRPC("signrawtransaction", [$encodedRawTransaction]);
-        $signedTx = $request->get("result");
-        if (!is_array($signedTx)) {
-            throw WalletException::unexpectedResultType("signrawtransaction", "array", gettype($signedTx));
+        $res = $this->walletRPC("signRawTransaction", [$encodedRawTransaction]);
+        if (!is_array($res->result)) {
+            throw WalletException::unexpectedResultType("signRawTransaction", "Object", gettype($res->result));
         }
 
-        return new SignedRawTransaction($signedTx);
+        return new SignedRawTransaction($res->result);
     }
 
     /**
      * @param string $signedTransaction
      * @return string
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function sendRawTransaction(string $signedTransaction): string
     {
-        $request = $this->walletRPC("sendrawtransaction", [$signedTransaction]);
-        $txId = $request->get("result");
-        if (!is_string($txId) || !Validator::Hash($txId, 64)) {
-            throw WalletException::unexpectedResultType("sendrawtransaction", "hash64", gettype($txId));
+        $res = $this->walletRPC("sendRawTransaction", [$signedTransaction]);
+        if (!is_string($res->result) || !Validator::Hash($res->result, 64)) {
+            throw WalletException::unexpectedResultType("sendRawTransaction", "Hash64", gettype($res->result));
         }
 
-        return $txId;
+        return $res->result;
     }
 
     /**
@@ -278,18 +244,15 @@ class Wallet
     /**
      * @param string $command
      * @param array|null $params
-     * @return JSONResponse
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
+     * @param string|null $httpMethod
+     * @return DaemonResponse
      */
-    private function walletRPC(string $command, ?array $params = null): JSONResponse
+    private function walletRPC(string $command, ?array $params = null, ?string $httpMethod = 'POST'): DaemonResponse
     {
-        $endpoint = null;
-        if ($this->name) {
-            $endpoint = sprintf('/wallet/%s', $this->name);
-        }
+        $endpoint = $this->name ?
+            sprintf('/wallet/%s', $this->name) : "";
 
-        return $this->client->jsonRPC($command, $endpoint, $params);
+        return $this->bitcoinRPC->jsonRPC_client()
+            ->jsonRPC_call($command, $endpoint, $params, $httpMethod);
     }
 }
