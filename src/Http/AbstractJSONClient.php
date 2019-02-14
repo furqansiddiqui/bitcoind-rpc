@@ -14,15 +14,19 @@ declare(strict_types=1);
 
 namespace BitcoinRPC\Http;
 
+use BitcoinRPC\Exception\BitcoinRPCException;
+
 /**
  * Class AbstractJSONClient
  * @package BitcoinRPC\Http
+ * @property-read null|string $host
+ * @property-read null|int $port
  */
 abstract class AbstractJSONClient
 {
-    /** @var string */
+    /** @var null|string */
     protected $host;
-    /** @var int */
+    /** @var null|int */
     protected $port;
     /** @var AuthBasic */
     protected $auth;
@@ -40,9 +44,26 @@ abstract class AbstractJSONClient
     }
 
     /**
+     * @param $prop
+     * @return string
+     * @throws BitcoinRPCException
+     */
+    public function __get($prop)
+    {
+        switch ($prop) {
+            case "host":
+                return $this->host;
+            case "port":
+                return $this->port;
+        }
+
+        throw new BitcoinRPCException('Cannot retrieve value of inaccessible property');
+    }
+
+    /**
      * @return AuthBasic
      */
-    public function auth(): AuthBasic
+    final public function auth(): AuthBasic
     {
         return $this->auth;
     }

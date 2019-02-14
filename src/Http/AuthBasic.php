@@ -14,9 +14,13 @@ declare(strict_types=1);
 
 namespace BitcoinRPC\Http;
 
+use BitcoinRPC\Exception\BitcoinRPCException;
+
 /**
  * Class AuthBasic
  * @package BitcoinRPC\Http
+ * @property-read null|string $username
+ * @property-read null|string $password
  */
 class AuthBasic
 {
@@ -24,6 +28,31 @@ class AuthBasic
     private $user;
     /** @var null|string */
     private $password;
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        return ["Daemon authentication credentials"];
+    }
+
+    /**
+     * @param $prop
+     * @return string|null
+     * @throws BitcoinRPCException
+     */
+    public function __get($prop)
+    {
+        switch ($prop) {
+            case "username":
+                return $this->user;
+            case "password":
+                return $this->password;
+        }
+
+        throw new BitcoinRPCException('Cannot get value for inaccessible property');
+    }
 
     /**
      * @param string $user
