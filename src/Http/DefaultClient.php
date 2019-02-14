@@ -77,6 +77,12 @@ class DefaultClient extends AbstractJSONClient
         // Has error?
         if (!$res->result) {
             $errorMessage = $res->error->message;
+            if ($errorMessage) {
+                // Daemon error message requires some cleaning
+                $errorMessage = preg_split("/(\r\n|\n|\r)/", $errorMessage);
+                $errorMessage = trim($errorMessage[0]);
+            }
+
             if (!$errorMessage) {
                 $errorMessage = 'An unknown error occurred, failed to retrieve "result"';
             }
