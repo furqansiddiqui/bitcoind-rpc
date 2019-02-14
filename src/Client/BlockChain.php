@@ -18,6 +18,7 @@ use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\BlockChainException;
 use BitcoinRPC\Response\Block;
 use BitcoinRPC\Response\RawTransaction;
+use BitcoinRPC\Validator;
 
 /**
  * Class BlockChain
@@ -26,7 +27,7 @@ use BitcoinRPC\Response\RawTransaction;
 class BlockChain
 {
     /** @var BitcoinRPC */
-    private $client;
+    private $bitcoinRPC;
 
     /**
      * BlockChain constructor.
@@ -34,97 +35,84 @@ class BlockChain
      */
     public function __construct(BitcoinRPC $client)
     {
-        $this->client = $client;
+        $this->bitcoinRPC = $client;
     }
 
     /**
      * @return int
      * @throws BlockChainException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getBlockCount(): int
     {
-        $request = $this->client->jsonRPC("getblockcount");
-        $blockCount = $request->get("result");
-        if (!is_int($blockCount)) {
-            throw BlockChainException::unexpectedResultType(__METHOD__, "int", gettype($blockCount));
+        $res = $this->bitcoinRPC->jsonRPC_client()
+            ->jsonRPC_call("getBlockCount");
+        if (!is_int($res->result)) {
+            throw BlockChainException::unexpectedResultType("getBlockCount", "int", gettype($res->result));
         }
 
-        return $blockCount;
+        return $res->result;
     }
 
     /**
      * @param int $number
      * @return string
      * @throws BlockChainException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getBlockHash(int $number): string
     {
-        $request = $this->client->jsonRPC("getblockhash", null, [$number]);
-        $hash = $request->get("result");
-        if (!is_string($hash) || !preg_match('/^[a-f0-9]{64}$/i', $hash)) {
-            throw BlockChainException::unexpectedResultType("getblockhash", "hash", gettype($hash));
+        $res = $this->bitcoinRPC->jsonRPC_client()
+            ->jsonRPC_call("getBlockHash", null, [$number]);
+        if (!Validator::Hash($res->result, 64)) {
+            throw BlockChainException::unexpectedResultType("getBlockHash", "hash64", gettype($res->result));
         }
 
-        return $hash;
+        return $res->result;
     }
 
     /**
      * @param string $hash
      * @return Block
      * @throws BlockChainException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getBlock(string $hash): Block
     {
-        $request = $this->client->jsonRPC("getblock", null, [$hash]);
-        $block = $request->get("result");
-        if (!is_array($block) || !count($block)) {
-            throw BlockChainException::unexpectedResultType("getblock", "object", gettype($block));
+        $res = $this->bitcoinRPC->jsonRPC_client()
+            ->jsonRPC_call("getBlock", null, [$hash]);
+
+        if (!is_array($res->result) || !$res->result) {
+            throw BlockChainException::unexpectedResultType("getBlock", "object", gettype($res->result));
         }
 
-        return new Block($block);
-    }
-
-    /**
-     * @param string $txId
-     * @return RawTransaction
-     * @throws BlockChainException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
-     * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \HttpClient\Exception\HttpClientException
-     */
-    public function getRawTransaction(string $txId): RawTransaction
-    {
-        $request = $this->client->jsonRPC("getrawtransaction", null, [$txId, 1]);
-        $rawTx = $request->get("result");
-        if (!is_array($rawTx) || !count($rawTx)) {
-            throw BlockChainException::unexpectedResultType("getrawtransaction", "object", gettype($rawTx));
-        }
-
-        return new RawTransaction($rawTx);
+        return new Block($res->result);
     }
 
     /**
      * @param int $number
      * @return Block
      * @throws BlockChainException
-     * @throws \BitcoinRPC\Exception\ConnectionException
-     * @throws \BitcoinRPC\Exception\DaemonException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \HttpClient\Exception\HttpClientException
      */
     public function getBlockByNumber(int $number): Block
     {
         return $this->getBlock($this->getBlockHash($number));
+    }
+
+    /**
+     * @param string $txId
+     * @return RawTransaction
+     * @throws BlockChainException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     */
+    public function getRawTransaction(string $txId): RawTransaction
+    {
+        $res = $this->bitcoinRPC->jsonRPC_client()
+            ->jsonRPC_call("getRawTransaction", null, [$txId]);
+
+        if (!is_array($res->result) || !$res->result) {
+            throw BlockChainException::unexpectedResultType("getRawTransaction", "object", gettype($res->result));
+        }
+
+        return new RawTransaction($res->result);
     }
 }
