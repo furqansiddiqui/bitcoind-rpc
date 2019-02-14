@@ -26,7 +26,7 @@ use BitcoinRPC\Http\DefaultClient;
  */
 class BitcoinRPC
 {
-    public const VERSION = "0.16.2";
+    public const VERSION = "0.20.1";
     public const SCALE = 8;
 
     /** @var AbstractJSONClient */
