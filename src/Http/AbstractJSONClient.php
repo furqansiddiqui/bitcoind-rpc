@@ -91,65 +91,60 @@ abstract class AbstractJSONClient
     }
 
     /**
-     * @param string $httpMethod
-     * @param string $endpoint
-     * @param string $id
      * @param string $method
+     * @param string|null $endpoint
      * @param array|null $params
+     * @param string|null $httpMethod
      * @return DaemonResponse
      */
     abstract public function jsonRPC_call(
-        string $httpMethod,
-        string $endpoint,
-        string $id,
         string $method,
-        ?array $params = null): DaemonResponse;
+        ?string $endpoint = null,
+        ?array $params = null,
+        ?string $httpMethod = 'POST'
+    ): DaemonResponse;
 
     /**
-     * @param string $endpoint
-     * @param string $id
      * @param string $method
+     * @param string|null $endpoint
      * @param array|null $params
      * @return DaemonResponse
      */
-    public function get(string $endpoint, string $id, string $method, ?array $params = null): DaemonResponse
+    public function get(string $method, ?string $endpoint = null, ?array $params = null): DaemonResponse
     {
-        return $this->jsonRPC_call("GET", $endpoint, $id, $method, $params);
+        return $this->jsonRPC_call($method, $endpoint, $params, "GET");
     }
 
     /**
-     * @param string $endpoint
-     * @param string $id
      * @param string $method
+     * @param string|null $endpoint
      * @param array|null $params
      * @return DaemonResponse
      */
-    public function post(string $endpoint, string $id, string $method, ?array $params = null): DaemonResponse
+    public function post(string $method, ?string $endpoint = null, ?array $params = null): DaemonResponse
     {
-        return $this->jsonRPC_call("POST", $endpoint, $id, $method, $params);
+        return $this->jsonRPC_call($method, $endpoint, $params, "POST");
     }
 
     /**
-     * @param string $endpoint
-     * @param string $id
      * @param string $method
+     * @param string|null $endpoint
      * @param array|null $params
      * @return DaemonResponse
      */
-    public function put(string $endpoint, string $id, string $method, ?array $params = null): DaemonResponse
+    public function put(string $method, ?string $endpoint = null, ?array $params = null): DaemonResponse
     {
-        return $this->jsonRPC_call("PUT", $endpoint, $id, $method, $params);
+        return $this->jsonRPC_call($method, $endpoint, $params, "PUT");
     }
 
     /**
-     * @param string $endpoint
-     * @param string $id
      * @param string $method
+     * @param string|null $endpoint
      * @param array|null $params
      * @return DaemonResponse
      */
-    public function delete(string $endpoint, string $id, string $method, ?array $params = null): DaemonResponse
+    public function delete(string $method, ?string $endpoint = null, ?array $params = null): DaemonResponse
     {
-        return $this->jsonRPC_call("DELETE", $endpoint, $id, $method, $params);
+        return $this->jsonRPC_call($method, $endpoint, $params, "DELETE");
     }
 }

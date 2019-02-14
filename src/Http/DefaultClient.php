@@ -44,17 +44,16 @@ class DefaultClient extends AbstractJSONClient
     }
 
     /**
-     * @param string $httpMethod
-     * @param string $endpoint
-     * @param string $id
      * @param string $method
+     * @param string|null $endpoint
      * @param array|null $params
+     * @param string|null $httpMethod
      * @return DaemonResponse
      * @throws BitcoinRPCException
      * @throws ConnectionException
      * @throws DaemonException
      */
-    public function jsonRPC_call(string $httpMethod, string $endpoint, string $id, string $method, ?array $params = null): DaemonResponse
+    public function jsonRPC_call(string $method, ?string $endpoint = null, ?array $params = null, ?string $httpMethod = 'POST'): DaemonResponse
     {
         // Set credentials
         $this->jsonRPC->authentication()
@@ -62,10 +61,10 @@ class DefaultClient extends AbstractJSONClient
 
         // Prepare & Send Request
         try {
-            $res = $this->jsonRPC->request($httpMethod, $endpoint)
-                ->id($id)
+            $res = $this->jsonRPC->request($httpMethod, $endpoint ?? "")
+                ->id($this->requestId($method))
                 ->method($method)
-                ->params($params)
+                ->params($params ?? [])
                 ->send();
         } catch (JSON_RPC_Exception $e) {
             throw new ConnectionException($e->getMessage(), $e->getCode());
