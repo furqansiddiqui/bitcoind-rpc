@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace BitcoinRPC\Http;
 
-use HttpClient\Response\JSONResponse;
 
 /**
  * Class DaemonResponse
@@ -36,14 +35,13 @@ class DaemonResponse
 
     /**
      * DaemonResponse constructor.
-     * @param JSONResponse|null $res
+     * @param array|null $headers
+     * @param array|null $body
      */
-    public function __construct(?JSONResponse $res = null)
+    public function __construct(?array $headers = null, ?array $body = null)
     {
-        if ($res) {
-            $this->headers = $res->headers();
-            $this->body = $res->array();
-        }
+        $this->headers = $headers;
+        $this->body = $body;
     }
 
     /**
