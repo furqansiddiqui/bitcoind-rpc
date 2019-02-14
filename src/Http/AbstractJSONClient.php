@@ -31,6 +31,9 @@ abstract class AbstractJSONClient
     /** @var AuthBasic */
     protected $auth;
 
+    /** @var null|int */
+    protected $_uniqueRequestIdNonce;
+
     /**
      * AbstractHttpClient constructor.
      * @param string $host
@@ -66,6 +69,25 @@ abstract class AbstractJSONClient
     final public function auth(): AuthBasic
     {
         return $this->auth;
+    }
+
+    /**
+     * @param int $nonce
+     * @return AbstractJSONClient
+     */
+    final public function uniqueRequestIdNonce(int $nonce): self
+    {
+        $this->_uniqueRequestIdNonce = $nonce;
+        return $this;
+    }
+
+    /**
+     * @param string $method
+     * @return string
+     */
+    final protected function requestId(string $method): string
+    {
+        return sprintf('%d_%s_%d', $this->_uniqueRequestIdNonce ?? 0, strtolower($method), time());
     }
 
     /**
