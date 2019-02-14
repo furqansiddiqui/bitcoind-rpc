@@ -38,7 +38,7 @@ class UnspentOutputs implements \Iterator, \Countable
     {
         if (!is_array($obj)) {
             throw ResponseObjectException::ObjectConstructError(
-                get_class(),
+                "UnspentOutputs",
                 sprintf('Constructor requires first argument "Array", got "%s"', gettype($obj))
             );
         }
