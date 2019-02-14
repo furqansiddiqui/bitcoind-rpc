@@ -36,7 +36,7 @@ class SignedRawTransaction
     {
         if (!is_array($obj)) {
             throw ResponseObjectException::ObjectConstructError(
-                get_class(),
+                "SignedRawTransaction",
                 sprintf('Constructor requires first argument "Array", got "%s"', gettype($obj))
             );
         }
