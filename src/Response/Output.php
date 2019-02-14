@@ -42,7 +42,7 @@ class Output
     {
         if (!is_array($obj)) {
             throw ResponseObjectException::ObjectConstructError(
-                get_class(),
+                "TransactionOutput",
                 sprintf('Constructor requires first argument "Array", got "%s"', gettype($obj))
             );
         }
