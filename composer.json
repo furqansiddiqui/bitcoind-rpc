@@ -2,15 +2,30 @@
   "name": "furqansiddiqui/bitcoind-rpc",
   "type": "library",
   "description": "JSON-RPC client for Bitcoin (and other altcoins based on bitcoind)",
-  "keywords": ["bitcoind", "bitcoin", "bitcoind-rpc", "litecoin", "altcoins"],
+  "keywords": [
+    "bitcoind",
+    "bitcoin",
+    "bitcoind-rpc",
+    "litecoin",
+    "btc",
+    "ltc",
+    "bch",
+    "bsv",
+    "dash",
+    "doge",
+    "altcoins"
+  ],
   "license": "MIT",
   "require": {
     "php": ">=7.1.0",
-    "furqansiddiqui/http-client": "dev-master"
+    "ext-bcmath": "*",
+    "furqansiddiqui/http-client": "^0.4.1"
   },
   "autoload": {
     "psr-4": {
-      "BitcoinRPC\\": ["src"]
+      "BitcoinRPC\\": [
+        "src"
+      ]
     }
   },
   "minimum-stability": "dev"
