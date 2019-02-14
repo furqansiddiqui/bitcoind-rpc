@@ -12,12 +12,16 @@
 
 declare(strict_types=1);
 
-namespace BitcoinRPC\Exception;
+namespace BitcoinRPC\Http;
 
 /**
- * Class DaemonException
- * @package BitcoinRPC\Exception
+ * Class DefaultClient
+ * @package BitcoinRPC\Http
  */
-class DaemonException extends BitcoinRPCException
+class DefaultClient extends AbstractJSONClient
 {
+    public function jsonRPC_call(string $httpMethod, string $endpoint, string $id, string $method, ?array $params = null): DaemonResponse
+    {
+
+    }
 }
