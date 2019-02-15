@@ -19,10 +19,12 @@ use BitcoinRPC\Client\Wallet;
 use BitcoinRPC\Exception\BitcoinRPCException;
 use BitcoinRPC\Http\AbstractJSONClient;
 use BitcoinRPC\Http\DefaultClient;
+use BitcoinRPC\Response\NetworkInfo;
 
 /**
  * Class BitcoinRPC
  * @package BitcoinRPC
+ * @property-read int $scale
  */
 class BitcoinRPC
 {
@@ -35,6 +37,8 @@ class BitcoinRPC
     private $_wallets;
     /** @var BlockChain */
     private $_blockChain;
+    /** @var NetworkInfo */
+    private $_networkInfo;
 
     /**
      * @param string $host
@@ -77,6 +81,27 @@ class BitcoinRPC
             ->password($password);
 
         return $this;
+    }
+
+    /**
+     * @return NetworkInfo
+     * @throws BitcoinRPCException
+     * @throws Exception\ResponseObjectException
+     */
+    public function getNetworkInfo(): NetworkInfo
+    {
+        if (!$this->_networkInfo) {
+            $res = $this->jsonRPC_client()->get("getNetworkInfo");
+            if (!is_array($res->result)) {
+                throw new BitcoinRPCException(
+                    BitcoinRPCException::unexpectedMethodResultTypeString("getNetworkInfo", "Object", gettype($res->result))
+                );
+            }
+
+            $this->_networkInfo = new NetworkInfo($res->result);
+        }
+
+        return $this->_networkInfo;
     }
 
     /**
