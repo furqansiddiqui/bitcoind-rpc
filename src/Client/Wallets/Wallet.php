@@ -134,7 +134,7 @@ class Wallet
 
         $res = $this->walletRPC("getbalance", $params);
         $balance = DataTypes::AmountAsString($res->result, $this->bitcoinRPC->config()->scale);
-        if (!$balance) {
+        if (is_null($balance)) {
             throw WalletsException::unexpectedResultType("getBalance");
         }
 
