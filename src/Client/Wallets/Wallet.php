@@ -279,7 +279,7 @@ class Wallet
      */
     public function prepareTransaction(): PrepareTransaction
     {
-        return new PrepareTransaction($this);
+        return new PrepareTransaction($this->bitcoinRPC, $this);
     }
 
     /**
