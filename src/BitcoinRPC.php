@@ -24,7 +24,6 @@ use BitcoinRPC\Response\NetworkInfo;
 /**
  * Class BitcoinRPC
  * @package BitcoinRPC
- * @property-read int $scale
  */
 class BitcoinRPC
 {
@@ -33,6 +32,9 @@ class BitcoinRPC
 
     /** @var AbstractJSONClient */
     private $_jsonRPC_client;
+    /** @var Config */
+    private $_config;
+
     /** @var array */
     private $_wallets;
     /** @var BlockChain */
@@ -65,6 +67,7 @@ class BitcoinRPC
         }
 
         $this->_jsonRPC_client = $jsonRPC_client;
+        $this->_config = new Config($this);
         $this->_wallets = [];
         $this->_blockChain = new BlockChain($this);
     }
@@ -81,6 +84,14 @@ class BitcoinRPC
             ->password($password);
 
         return $this;
+    }
+
+    /**
+     * @return Config
+     */
+    public function config(): Config
+    {
+        return $this->_config;
     }
 
     /**
