@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace BitcoinRPC\Client\Wallets;
 
+use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\PrepareTransactionException;
 use BitcoinRPC\Response\Output;
 use BitcoinRPC\Response\UnspentOutputs;
@@ -25,8 +26,11 @@ use BitcoinRPC\Validator;
  */
 class PrepareTransaction
 {
+    /** @var BitcoinRPC */
+    private $bitcoinRPC;
     /** @var Wallet */
     private $wallet;
+
     /** @var array */
     private $outputs;
     /** @var int */
@@ -45,10 +49,12 @@ class PrepareTransaction
 
     /**
      * PrepareTransaction constructor.
+     * @param BitcoinRPC $bitcoinRPC
      * @param Wallet $wallet
      */
-    public function __construct(Wallet $wallet)
+    public function __construct(BitcoinRPC $bitcoinRPC, Wallet $wallet)
     {
+        $this->bitcoinRPC = $bitcoinRPC;
         $this->wallet = $wallet;
         $this->outputs = [];
         $this->totalOutputsCount = 0;
@@ -147,6 +153,7 @@ class PrepareTransaction
     /**
      * @return string
      * @throws PrepareTransactionException
+     * @throws \BitcoinRPC\Exception\BitcoinRPCException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
      * @throws \BitcoinRPC\Exception\WalletsException
      */
@@ -213,8 +220,16 @@ class PrepareTransaction
         // Create Raw Transaction
         $rawTransaction = $this->wallet->createRawTransaction($txInputs, $txOutputs);
 
+        // Which method to use?
+        $signingMethod = "signRawTransaction";
+        if ($this->bitcoinRPC->config()->validateCorePrivileges) {
+            if ($this->bitcoinRPC->corePrivileges()->hasDynamicWallets) {
+                $signingMethod = "signRawTransactionWithWallet";
+            }
+        }
+
         // Sign created Transaction
-        $signedTx = $this->wallet->signRawTransaction($rawTransaction);
+        $signedTx = call_user_func_array([$this->wallet, $signingMethod], [$rawTransaction]);
         if ($signedTx->complete !== true) {
             throw new PrepareTransactionException('Signed TX is not complete, requires external keys');
         }
