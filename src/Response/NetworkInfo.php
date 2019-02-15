@@ -19,17 +19,21 @@ use BitcoinRPC\Exception\ResponseObjectException;
 /**
  * Class NetworkInfo
  * @package BitcoinRPC\Response
+ * @property-read int $version
+ * @property-read string $subVersion
+ * @property-read int $protocolVersion
+ * @property-read int $connections
  */
 class NetworkInfo
 {
     /** @var int */
-    public $version;
+    private $version;
     /** @var string */
-    public $subVersion;
+    private $subVersion;
     /** @var int */
-    public $protocolVersion;
+    private $protocolVersion;
     /** @var int */
-    public $connections;
+    private $connections;
 
     /**
      * NetworkInfo constructor.
@@ -67,5 +71,23 @@ class NetworkInfo
         if (!is_int($this->connections)) {
             throw ResponseObjectException::badParamValueType("NetworkInfo.connections", "int", gettype($this->connections));
         }
+    }
+
+    /**
+     * @param $prop
+     * @return mixed
+     * @throws ResponseObjectException
+     */
+    public function __get($prop)
+    {
+        switch ($prop) {
+            case "version":
+            case "subVersion":
+            case "protocolVersion":
+            case "connections":
+                return $this->$prop;
+        }
+
+        throw new ResponseObjectException('Cannot retrieve value for inaccessible NetworkInfo prop');
     }
 }
