@@ -287,9 +287,13 @@ class Wallet
      * @param bool $forceRefreshList
      * @return bool
      * @throws WalletsException
+     * @throws \BitcoinRPC\Exception\BitcoinRPCException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
      */
     public function isLoaded(bool $checkAtNode = false, bool $forceRefreshList = false): bool
     {
+        $this->hasDynamicLoading();
+
         if ($checkAtNode) {
             $this->wallets->isLoaded($this->name, $forceRefreshList);
         }
@@ -362,9 +366,13 @@ class Wallet
 
     /**
      * @throws WalletsException
+     * @throws \BitcoinRPC\Exception\BitcoinRPCException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
      */
     public function unload(): void
     {
+        $this->hasDynamicLoading();
+
         if ($this->_unlockedUntil) {
             if (time() <= $this->_unlockedUntil) {
                 // Cannot allow since it will crash daemon RPC server
