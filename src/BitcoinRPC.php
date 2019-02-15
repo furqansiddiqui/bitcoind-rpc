@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace BitcoinRPC;
 
 use BitcoinRPC\Client\BlockChain;
+use BitcoinRPC\Client\MemPool;
 use BitcoinRPC\Client\Wallets;
 use BitcoinRPC\Exception\BitcoinRPCException;
 use BitcoinRPC\Http\AbstractJSONClient;
@@ -38,6 +39,8 @@ class BitcoinRPC
     private $_wallets;
     /** @var BlockChain */
     private $_blockChain;
+    /** @var MemPool */
+    private $_memPool;
 
     /** @var NetworkInfo */
     private $_networkInfo;
@@ -72,6 +75,7 @@ class BitcoinRPC
         $this->_config = new Config($this);
         $this->_wallets = new Wallets($this);
         $this->_blockChain = new BlockChain($this);
+        $this->_memPool = new MemPool($this);
     }
 
     /**
@@ -102,6 +106,14 @@ class BitcoinRPC
     public function wallets(): Wallets
     {
         return $this->_wallets;
+    }
+
+    /**
+     * @return MemPool
+     */
+    public function mempool(): MemPool
+    {
+        return $this->_memPool;
     }
 
     /**
