@@ -16,6 +16,7 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Client\Wallet\PrepareTransaction;
+use BitcoinRPC\DataTypes;
 use BitcoinRPC\Exception\WalletException;
 use BitcoinRPC\Http\DaemonResponse;
 use BitcoinRPC\Response\SignedRawTransaction;
@@ -107,11 +108,12 @@ class Wallet
         }
 
         $res = $this->walletRPC("getBalance", $params);
-        if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $res->result)) {
+        $balance = DataTypes::AmountAsString($res->result, BitcoinRPC::SCALE);
+        if (!$balance) {
             throw WalletException::unexpectedResultType("getBalance", "balance");
         }
 
-        return bcmul($res->result, "1", BitcoinRPC::SCALE);
+        return $balance;
     }
 
     /**
