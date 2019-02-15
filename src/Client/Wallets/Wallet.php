@@ -336,7 +336,7 @@ class Wallet
                 throw new WalletsException('JSON RPC client did not set lastCommandError');
             }
 
-            if (preg_match('/duplicate \-wallet filename specified/i', $lastCommandError)) {
+            if (preg_match('/duplicate \-wallet filename specified/i', $lastCommandError->message)) {
                 $this->_isLoaded = true;
                 return;
             }
