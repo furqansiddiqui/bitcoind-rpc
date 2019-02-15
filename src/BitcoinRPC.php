@@ -112,7 +112,7 @@ class BitcoinRPC
     public function getNetworkInfo(): NetworkInfo
     {
         if (!$this->_networkInfo) {
-            $res = $this->jsonRPC_client()->get("getnetworkinfo");
+            $res = $this->jsonRPC_client()->post("getnetworkinfo");
             if (!is_array($res->result)) {
                 throw new BitcoinRPCException(
                     BitcoinRPCException::unexpectedMethodResultTypeString("getNetworkInfo", "Object", gettype($res->result))
