@@ -78,8 +78,6 @@ class DefaultClient extends AbstractJSONClient
 
         // Has error?
         if (!$res->result) {
-            $errorMessage = null;
-
             if ($res->error) {
                 $this->_lastCommandError = DaemonResponseError::FromJSON_RPC($res->error);
 
@@ -88,14 +86,11 @@ class DefaultClient extends AbstractJSONClient
                     // Daemon error message requires some cleaning
                     $errorMessage = preg_split("/(\r\n|\n|\r)/", $errorMessage);
                     $errorMessage = trim($errorMessage[0]);
+
                 }
-            }
 
-            if (!$errorMessage) {
-                $errorMessage = 'An unknown error occurred, failed to retrieve "result"';
+                throw new DaemonException($errorMessage, $res->error->code);
             }
-
-            throw new DaemonException($errorMessage, $res->error->code);
         }
 
         // Compile DaemonResponse
