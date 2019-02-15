@@ -20,6 +20,7 @@ use BitcoinRPC\Exception\BitcoinRPCException;
  * Class Config
  * @package BitcoinRPC
  * @property-read int $scale
+ * @property-read bool $validateCorePrivileges
  */
 class Config
 {
@@ -27,6 +28,8 @@ class Config
     private $bitcoinRPC;
     /** @var int */
     private $scale;
+    /** @var bool */
+    private $validateCorePrivileges;
 
     /**
      * Config constructor.
@@ -36,6 +39,7 @@ class Config
     {
         $this->bitcoinRPC = $bitcoinRPC;
         $this->scale = BitcoinRPC::SCALE;
+        $this->validateCorePrivileges = true;
     }
 
     /**
@@ -47,7 +51,8 @@ class Config
     {
         switch ($prop) {
             case "scale":
-                return $this->scale;
+            case "validateCorePrivileges":
+                return $this->$prop;
         }
 
         throw new BitcoinRPCException('Cannot retrieve value of inaccessible config property');
@@ -60,6 +65,16 @@ class Config
     public function scale(int $scale): self
     {
         $this->scale = $scale;
+        return $this;
+    }
+
+    /**
+     * @param bool $validate
+     * @return Config
+     */
+    public function validateCorePrivileges(bool $validate): self
+    {
+        $this->validateCorePrivileges = $validate;
         return $this;
     }
 }
