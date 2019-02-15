@@ -99,7 +99,8 @@ class Wallets
     public function loadedWallets(bool $forceRefreshList = false): array
     {
         if (!is_array($this->_loadedWallets) || $forceRefreshList) {
-            $loadedWallets = $this->bitcoinRPC->jsonRPC_client()->jsonRPC_call("listwallets");
+            $res = $this->bitcoinRPC->jsonRPC_client()->jsonRPC_call("listwallets");
+            $loadedWallets = $res->result;
             if (!is_array($loadedWallets)) {
                 throw WalletsException::unexpectedResultType("listWallets", "Array", gettype($loadedWallets));
             }
