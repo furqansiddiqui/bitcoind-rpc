@@ -132,7 +132,7 @@ class Wallet
             }
         }
 
-        $res = $this->walletRPC("getBalance", $params);
+        $res = $this->walletRPC("getbalance", $params);
         $balance = DataTypes::AmountAsString($res->result);
         if (!$balance) {
             throw WalletsException::unexpectedResultType("getBalance");
@@ -147,7 +147,7 @@ class Wallet
      */
     public function getNewAddress(): string
     {
-        $res = $this->walletRPC("getNewAddress");
+        $res = $this->walletRPC("getnewaddress");
         if (!is_string($res->result)) {
             throw WalletsException::unexpectedResultType("getNewAddress", "String", gettype($res->result));
         }
@@ -162,7 +162,7 @@ class Wallet
      */
     public function getTransaction(string $txHash): array
     {
-        $res = $this->walletRPC("getTransaction", [$txHash]);
+        $res = $this->walletRPC("gettransaction", [$txHash]);
         if (!is_array($res->result)) {
             throw WalletsException::unexpectedResultType("getTransaction", "Array", gettype($res->result));
         }
@@ -178,7 +178,7 @@ class Wallet
      */
     public function sendToAddress(string $addr, string $amount): string
     {
-        $res = $this->walletRPC("sendToAddress", [$addr, $amount]);
+        $res = $this->walletRPC("sendtoaddress", [$addr, $amount]);
         if (!is_string($res->result)) {
             throw WalletsException::unexpectedResultType("sendToAddress", "String", gettype($res->result));
         }
@@ -205,7 +205,7 @@ class Wallet
             $args[] = $addresses;
         }
 
-        $res = $this->walletRPC("listUnspent", $args);
+        $res = $this->walletRPC("listunspent", $args);
         if (!is_array($res->result)) {
             throw WalletsException::unexpectedResultType("listUnspent", "Array", gettype($res->result));
         }
@@ -221,7 +221,7 @@ class Wallet
      */
     public function createRawTransaction(array $inputs, array $outputs): string
     {
-        $res = $this->walletRPC("createRawTransaction", [$inputs, $outputs]);
+        $res = $this->walletRPC("createrawtransaction", [$inputs, $outputs]);
         if (!is_string($res->result)) {
             throw WalletsException::unexpectedResultType("createRawTransaction", "String", gettype($res->result));
         }
@@ -236,7 +236,7 @@ class Wallet
      */
     public function signRawTransaction(string $encodedRawTransaction): SignedRawTransaction
     {
-        $res = $this->walletRPC("signRawTransaction", [$encodedRawTransaction]);
+        $res = $this->walletRPC("signrawtransaction", [$encodedRawTransaction]);
         if (!is_array($res->result)) {
             throw WalletsException::unexpectedResultType("signRawTransaction", "Array", gettype($res->result));
         }
@@ -251,7 +251,7 @@ class Wallet
      */
     public function signRawTransactionWithWallet(string $encodedRawTransaction): SignedRawTransaction
     {
-        $res = $this->walletRPC("signRawTransactionWithWallet", [$encodedRawTransaction]);
+        $res = $this->walletRPC("signrawtransactionwithwallet", [$encodedRawTransaction]);
         if (!$res->result) {
             throw WalletsException::unexpectedResultType("signRawTransactionWithWallet", "Array", gettype($res->result));
         }
@@ -266,7 +266,7 @@ class Wallet
      */
     public function sendRawTransaction(string $signedTransaction): string
     {
-        $res = $this->walletRPC("sendRawTransaction", [$signedTransaction]);
+        $res = $this->walletRPC("sendrawtransaction", [$signedTransaction]);
         if (!Validator::Hash($res->result, 64)) {
             throw WalletsException::unexpectedResultType("sendRawTransaction", "Hash64", gettype($res->result));
         }
@@ -329,7 +329,7 @@ class Wallet
         $jsonRPC_client = $this->bitcoinRPC->jsonRPC_client();
 
         try {
-            $res = $jsonRPC_client->jsonRPC_call("loadWallet", null, [$this->name]);
+            $res = $jsonRPC_client->jsonRPC_call("loadwallet", null, [$this->name]);
         } catch (\Exception $e) {
             $lastCommandError = $jsonRPC_client->lastCommandError();
             if (!$lastCommandError) {
@@ -383,7 +383,7 @@ class Wallet
         }
 
         $res = $this->bitcoinRPC->jsonRPC_client()
-            ->jsonRPC_call("unloadWallet", null, [$this->name]);
+            ->jsonRPC_call("unloadwallet", null, [$this->name]);
         if ($res->httpStatusCode !== 200) {
             throw WalletsException::unexpectedResultType("unloadWallet", "NULL");
         }
@@ -400,7 +400,7 @@ class Wallet
             throw new WalletsException('Invalid encryption passphrase');
         }
 
-        $res = $this->walletRPC("encryptWallet", [$passphrase]);
+        $res = $this->walletRPC("encryptwallet", [$passphrase]);
         if (!is_string($res->result)) {
             throw WalletsException::unexpectedResultType("encryptWallet", "String", gettype($res->result));
         }

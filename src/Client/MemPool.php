@@ -42,7 +42,7 @@ class MemPool
     public function getRaw(): array
     {
         $res = $this->bitcoinRPC->jsonRPC_client()
-            ->jsonRPC_call("getRawMempool");
+            ->jsonRPC_call("getrawmempool");
 
         if (!is_array($res->result)) {
             throw MemPoolException::unexpectedResultType("getRawMempool", "Object", gettype($res->result));

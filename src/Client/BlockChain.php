@@ -45,7 +45,7 @@ class BlockChain
     public function getBlockCount(): int
     {
         $res = $this->bitcoinRPC->jsonRPC_client()
-            ->jsonRPC_call("getBlockCount");
+            ->jsonRPC_call("getblockcount");
         if (!is_int($res->result)) {
             throw BlockChainException::unexpectedResultType("getBlockCount", "int", gettype($res->result));
         }
@@ -61,7 +61,7 @@ class BlockChain
     public function getBlockHash(int $number): string
     {
         $res = $this->bitcoinRPC->jsonRPC_client()
-            ->jsonRPC_call("getBlockHash", null, [$number]);
+            ->jsonRPC_call("getblockhash", null, [$number]);
         if (!Validator::Hash($res->result, 64)) {
             throw BlockChainException::unexpectedResultType("getBlockHash", "Hash64", gettype($res->result));
         }
@@ -78,7 +78,7 @@ class BlockChain
     public function getBlock(string $hash): Block
     {
         $res = $this->bitcoinRPC->jsonRPC_client()
-            ->jsonRPC_call("getBlock", null, [$hash]);
+            ->jsonRPC_call("getblock", null, [$hash]);
 
         if (!is_array($res->result) || !$res->result) {
             throw BlockChainException::unexpectedResultType("getBlock", "Object", gettype($res->result));
@@ -107,7 +107,7 @@ class BlockChain
     public function getRawTransaction(string $txId): RawTransaction
     {
         $res = $this->bitcoinRPC->jsonRPC_client()
-            ->jsonRPC_call("getRawTransaction", null, [$txId]);
+            ->jsonRPC_call("getrawtransaction", null, [$txId]);
 
         if (!is_array($res->result) || !$res->result) {
             throw BlockChainException::unexpectedResultType("getRawTransaction", "Object", gettype($res->result));

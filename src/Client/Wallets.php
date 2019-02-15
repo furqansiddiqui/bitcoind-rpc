@@ -54,7 +54,7 @@ class Wallets
             throw new WalletsException('Invalid wallet name to create');
         }
 
-        $res = $this->bitcoinRPC->jsonRPC_client()->jsonRPC_call("createWallet", null, [$name]);
+        $res = $this->bitcoinRPC->jsonRPC_client()->jsonRPC_call("createwallet", null, [$name]);
         $createdWallet = $res->result;
         if (!is_array($createdWallet) || !array_key_exists("name", $createdWallet)) {
             throw new WalletsException('Failed to create new wallet, invalid response');
@@ -99,7 +99,7 @@ class Wallets
     public function loadedWallets(bool $forceRefreshList = false): array
     {
         if (!is_array($this->_loadedWallets) || $forceRefreshList) {
-            $loadedWallets = $this->bitcoinRPC->jsonRPC_client()->get("listWallets");
+            $loadedWallets = $this->bitcoinRPC->jsonRPC_client()->get("listwallets");
             if (!is_array($loadedWallets)) {
                 throw WalletsException::unexpectedResultType("listWallets", "Array", gettype($loadedWallets));
             }
