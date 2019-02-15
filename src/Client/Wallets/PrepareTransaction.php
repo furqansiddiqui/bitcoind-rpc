@@ -12,9 +12,8 @@
 
 declare(strict_types=1);
 
-namespace BitcoinRPC\Client\Wallet;
+namespace BitcoinRPC\Client\Wallets;
 
-use BitcoinRPC\Client\Wallet;
 use BitcoinRPC\Exception\PrepareTransactionException;
 use BitcoinRPC\Response\Output;
 use BitcoinRPC\Response\UnspentOutputs;
@@ -149,7 +148,7 @@ class PrepareTransaction
      * @return string
      * @throws PrepareTransactionException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
-     * @throws \BitcoinRPC\Exception\WalletException
+     * @throws \BitcoinRPC\Exception\WalletsException
      */
     public function send(): string
     {

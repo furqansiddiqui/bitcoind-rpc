@@ -17,13 +17,13 @@ namespace BitcoinRPC\Exception;
  * Class WalletException
  * @package BitcoinRPC\Exception
  */
-class WalletException extends BitcoinRPCException
+class WalletsException extends BitcoinRPCException
 {
     /**
      * @param string $method
      * @param string|null $expected
      * @param string|null $got
-     * @return WalletException
+     * @return WalletsException
      */
     public static function unexpectedResultType(string $method, ?string $expected = null, ?string $got = null): self
     {

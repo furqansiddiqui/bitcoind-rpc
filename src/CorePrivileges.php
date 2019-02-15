@@ -12,9 +12,8 @@
 
 declare(strict_types=1);
 
-namespace BitcoinRPC\Client;
+namespace BitcoinRPC;
 
-use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\BitcoinRPCException;
 
 /**

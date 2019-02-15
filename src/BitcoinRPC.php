@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace BitcoinRPC;
 
 use BitcoinRPC\Client\BlockChain;
-use BitcoinRPC\Client\Wallet;
+use BitcoinRPC\Client\Wallets;
 use BitcoinRPC\Exception\BitcoinRPCException;
 use BitcoinRPC\Http\AbstractJSONClient;
 use BitcoinRPC\Http\DefaultClient;
@@ -34,13 +34,15 @@ class BitcoinRPC
     private $_jsonRPC_client;
     /** @var Config */
     private $_config;
-
-    /** @var array */
+    /** @var Wallets */
     private $_wallets;
     /** @var BlockChain */
     private $_blockChain;
+
     /** @var NetworkInfo */
     private $_networkInfo;
+    /** @var null|CorePrivileges */
+    private $_corePrivileges;
 
     /**
      * @param string $host
@@ -68,7 +70,7 @@ class BitcoinRPC
 
         $this->_jsonRPC_client = $jsonRPC_client;
         $this->_config = new Config($this);
-        $this->_wallets = [];
+        $this->_wallets = new Wallets($this);
         $this->_blockChain = new BlockChain($this);
     }
 
@@ -95,6 +97,14 @@ class BitcoinRPC
     }
 
     /**
+     * @return Wallets
+     */
+    public function wallets(): Wallets
+    {
+        return $this->_wallets;
+    }
+
+    /**
      * @return NetworkInfo
      * @throws BitcoinRPCException
      * @throws Exception\ResponseObjectException
@@ -116,28 +126,25 @@ class BitcoinRPC
     }
 
     /**
+     * @return CorePrivileges
+     * @throws BitcoinRPCException
+     * @throws Exception\ResponseObjectException
+     */
+    public function corePrivileges(): CorePrivileges
+    {
+        if (!$this->_corePrivileges) {
+            $this->_corePrivileges = new CorePrivileges($this);
+        }
+
+        return $this->_corePrivileges;
+    }
+
+    /**
      * @return AbstractJSONClient
      */
     public function jsonRPC_client(): AbstractJSONClient
     {
         return $this->_jsonRPC_client;
-    }
-
-    /**
-     * @param null|string $name
-     * @return Wallet
-     * @throws Exception\WalletException
-     */
-    public function wallet(?string $name = "wallet.dat"): Wallet
-    {
-        $key = $name ? strtolower($name) : "_default";
-        if (array_key_exists($key, $this->_wallets)) {
-            return $this->_wallets[$key];
-        }
-
-        $wallet = new Wallet($this, $name);
-        $this->_wallets[$key] = $wallet;
-        return $wallet;
     }
 
     /**

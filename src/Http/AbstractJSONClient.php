@@ -95,7 +95,7 @@ abstract class AbstractJSONClient
     /**
      * @return DaemonResponseError|null
      */
-    final protected function lastCommandError(): ?DaemonResponseError
+    final public function lastCommandError(): ?DaemonResponseError
     {
         return $this->_lastCommandError;
     }

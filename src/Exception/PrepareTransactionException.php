@@ -18,6 +18,6 @@ namespace BitcoinRPC\Exception;
  * Class PrepareTransactionException
  * @package BitcoinRPC\Exception
  */
-class PrepareTransactionException extends WalletException
+class PrepareTransactionException extends WalletsException
 {
 }
