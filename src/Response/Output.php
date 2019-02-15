@@ -41,9 +41,8 @@ class Output
     public function __construct($obj)
     {
         if (!is_array($obj)) {
-            throw ResponseObjectException::ObjectConstructError(
-                "TransactionOutput",
-                sprintf('Constructor requires first argument "Array", got "%s"', gettype($obj))
+            throw new ResponseObjectException(
+                sprintf('TransactionOutput object requires first argument Array, got "%s"', gettype($obj))
             );
         }
 

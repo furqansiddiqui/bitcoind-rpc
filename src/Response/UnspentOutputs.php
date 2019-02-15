@@ -31,18 +31,11 @@ class UnspentOutputs implements \Iterator, \Countable, BitcoindResponseInterface
 
     /**
      * UnspentOutputs constructor.
-     * @param $obj
+     * @param array $obj
      * @throws ResponseObjectException
      */
-    public function __construct($obj)
+    public function __construct(array $obj)
     {
-        if (!is_array($obj)) {
-            throw ResponseObjectException::ObjectConstructError(
-                "UnspentOutputs",
-                sprintf('Constructor requires first argument "Array", got "%s"', gettype($obj))
-            );
-        }
-
         $this->outputs = [];
         $this->count = 0;
         $this->index = 0;

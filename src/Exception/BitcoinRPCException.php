@@ -25,7 +25,7 @@ class BitcoinRPCException extends \Exception
      * @param string|null $got
      * @return string
      */
-    protected static function unexpectedMethodResultTypeString(string $method, ?string $expected = null, ?string $got = null): string
+    public static function unexpectedMethodResultTypeString(string $method, ?string $expected = null, ?string $got = null): string
     {
         $message = sprintf('Method "%s" unexpected result data type', $method);
         if ($expected) {

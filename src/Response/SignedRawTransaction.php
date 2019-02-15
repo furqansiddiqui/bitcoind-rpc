@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace BitcoinRPC\Response;
 
-use BitcoinRPC\Exception\ResponseObjectException;
-
 /**
  * Class SignedRawTransaction
  * @package BitcoinRPC\Response
@@ -29,18 +27,10 @@ class SignedRawTransaction implements BitcoindResponseInterface
 
     /**
      * SignedRawTransaction constructor.
-     * @param $obj
-     * @throws ResponseObjectException
+     * @param array $obj
      */
-    public function __construct($obj)
+    public function __construct(array $obj)
     {
-        if (!is_array($obj)) {
-            throw ResponseObjectException::ObjectConstructError(
-                "SignedRawTransaction",
-                sprintf('Constructor requires first argument "Array", got "%s"', gettype($obj))
-            );
-        }
-
         $this->hex = $obj["hex"];
         $this->complete = $obj["complete"];
     }

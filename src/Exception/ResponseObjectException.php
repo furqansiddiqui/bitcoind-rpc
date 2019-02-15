@@ -21,14 +21,22 @@ namespace BitcoinRPC\Exception;
 class ResponseObjectException extends BitcoinRPCException
 {
     /**
-     * @param string $class
-     * @param string $errorMessage
+     * @param string $param
+     * @param string|null $expected
+     * @param string|null $got
      * @return ResponseObjectException
      */
-    public static function ObjectConstructError(string $class, string $errorMessage): self
+    public static function badParamValueType(string $param, ?string $expected = null, ?string $got = null): self
     {
-        return new self(
-            sprintf('Failed to construct response object "%s": %s', $class, $errorMessage)
-        );
+        $message = sprintf('Bad value for param "%s"', $param);
+        if ($expected) {
+            $message .= sprintf(', expected "%s"', $expected);
+        }
+
+        if ($got) {
+            $message .= sprintf(', got "%s"', $got);
+        }
+
+        return new self($message);
     }
 }

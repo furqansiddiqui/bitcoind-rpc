@@ -208,7 +208,6 @@ class Wallet
      * @param string $encodedRawTransaction
      * @return SignedRawTransaction
      * @throws WalletException
-     * @throws \BitcoinRPC\Exception\ResponseObjectException
      */
     public function signRawTransaction(string $encodedRawTransaction): SignedRawTransaction
     {

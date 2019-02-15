@@ -120,34 +120,21 @@ class RawTransaction implements BitcoindResponseInterface
 
     /**
      * @param string $param
-     * @param null|string $expected
-     * @param null|string $got
+     * @param string|null $expected
+     * @param string|null $got
      * @return ResponseObjectException
      */
     private function unexpectedParamValue(string $param, ?string $expected = null, ?string $got = null): ResponseObjectException
     {
-        $message = sprintf('Bad/unexpected value for param "%s"', $param);
-        if ($expected) {
-            $message .= sprintf(', expected "%s"', $expected);
+        try {
+            throw ResponseObjectException::badParamValueType($param, $expected, $got);
+        } catch (ResponseObjectException $e) {
+            $txId = "unknown-transaction";
+            if (is_string($this->txId) && strlen($this->txId) === 64) {
+                $txId = substr($this->txId, 0, 12) . "...";
+            }
+
+            return new ResponseObjectException(sprintf('Tx[%s]: %s', $txId, $e->getMessage()));
         }
-
-        if ($got) {
-            $message .= sprintf(', got "%s"', $got);
-        }
-
-
-        return $this->exception($message);
-    }
-
-    /**
-     * @param string $message
-     * @return ResponseObjectException
-     */
-    public function exception(string $message): ResponseObjectException
-    {
-        $txId = $this->txId ?? "unknownTransaction";
-        return new ResponseObjectException(
-            sprintf('Transaction ["%s..."]: %s', substr($txId, 0, 8), $message)
-        );
     }
 }
