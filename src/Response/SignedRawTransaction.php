@@ -20,7 +20,7 @@ use BitcoinRPC\Exception\ResponseObjectException;
  * Class SignedRawTransaction
  * @package BitcoinRPC\Response
  */
-class SignedRawTransaction
+class SignedRawTransaction implements BitcoindResponseInterface
 {
     /** @var string */
     public $hex;

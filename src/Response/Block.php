@@ -21,7 +21,7 @@ use BitcoinRPC\Validator;
  * Class Block
  * @package BitcoinRPC\Response
  */
-class Block
+class Block implements BitcoindResponseInterface
 {
     /** @var string */
     public $hash;

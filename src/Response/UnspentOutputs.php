@@ -20,7 +20,7 @@ use BitcoinRPC\Exception\ResponseObjectException;
  * Class UnspentOutputs
  * @package BitcoinRPC\Response
  */
-class UnspentOutputs implements \Iterator, \Countable
+class UnspentOutputs implements \Iterator, \Countable, BitcoindResponseInterface
 {
     /** @var array */
     private $outputs;

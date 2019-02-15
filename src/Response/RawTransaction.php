@@ -21,7 +21,7 @@ use BitcoinRPC\Validator;
  * Class RawTransaction
  * @package BitcoinRPC\Response
  */
-class RawTransaction
+class RawTransaction implements BitcoindResponseInterface
 {
     /** @var mixed|null */
     public $version;
