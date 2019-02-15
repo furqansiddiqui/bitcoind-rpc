@@ -109,7 +109,7 @@ class CorePrivileges
 
         // Dynamic wallets
         if (in_array($this->coin, ["BTC"])) {
-            if ($this->version > 170000) {
+            if ($this->version >= 170000) {
                 $this->hasDynamicWallets = true;
             }
         }
