@@ -33,6 +33,8 @@ abstract class AbstractJSONClient
 
     /** @var null|int */
     protected $_uniqueRequestIdNonce;
+    /** @var null|DaemonResponseError */
+    protected $_lastCommandError;
 
     /**
      * AbstractHttpClient constructor.
@@ -88,6 +90,14 @@ abstract class AbstractJSONClient
     final protected function requestId(string $method): string
     {
         return sprintf('%d_%s_%d', $this->_uniqueRequestIdNonce ?? 0, strtolower($method), time());
+    }
+
+    /**
+     * @return DaemonResponseError|null
+     */
+    final protected function lastCommandError(): ?DaemonResponseError
+    {
+        return $this->_lastCommandError;
     }
 
     /**

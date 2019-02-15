@@ -55,6 +55,8 @@ class DefaultClient extends AbstractJSONClient
      */
     public function jsonRPC_call(string $method, ?string $endpoint = null, ?array $params = null, ?string $httpMethod = 'POST'): DaemonResponse
     {
+        $this->_lastCommandError = null;
+
         // Set credentials
         $this->jsonRPC->authentication()
             ->basic($this->auth->username, $this->auth->password);
@@ -76,11 +78,17 @@ class DefaultClient extends AbstractJSONClient
 
         // Has error?
         if (!$res->result) {
-            $errorMessage = $res->error->message;
-            if ($errorMessage) {
-                // Daemon error message requires some cleaning
-                $errorMessage = preg_split("/(\r\n|\n|\r)/", $errorMessage);
-                $errorMessage = trim($errorMessage[0]);
+            $errorMessage = null;
+
+            if ($res->error) {
+                $this->_lastCommandError = DaemonResponseError::FromJSON_RPC($res->error);
+
+                $errorMessage = $res->error->message ?? null;
+                if ($errorMessage) {
+                    // Daemon error message requires some cleaning
+                    $errorMessage = preg_split("/(\r\n|\n|\r)/", $errorMessage);
+                    $errorMessage = trim($errorMessage[0]);
+                }
             }
 
             if (!$errorMessage) {
