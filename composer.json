@@ -19,7 +19,7 @@
   "require": {
     "php": ">=7.1.0",
     "ext-bcmath": "*",
-    "furqansiddiqui/http-client": "dev-master"
+    "furqansiddiqui/http-client": "^0.4.1"
   },
   "autoload": {
     "psr-4": {
