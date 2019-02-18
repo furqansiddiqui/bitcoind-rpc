@@ -61,7 +61,7 @@ abstract class AbstractEventsLib
      * @param array|null $args
      * @throws EventsException
      */
-    protected function trigger($tag, ?array $args = null): void
+    public function trigger($tag, ?array $args = null): void
     {
         $tag = strtolower($tag);
         $func = $this->events[$tag] ?? null;
