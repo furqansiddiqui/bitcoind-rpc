@@ -14,29 +14,30 @@ declare(strict_types=1);
 
 namespace BitcoinRPC\Events;
 
-use BitcoinRPC\Client\Wallets\Wallet;
+use BitcoinRPC\Client\Wallets;
 
 /**
- * Class WalletEvents
+ * Class WalletsEvents
+ * @package BitcoinRPC\Events
  */
-class WalletEvents extends AbstractEventsLib
+class WalletsEvents extends AbstractEventsLib
 {
-    /** @var Wallet */
-    private $wallet;
+    /** @var Wallets */
+    private $wallets;
 
     /**
-     * WalletEvents constructor.
-     * @param Wallet $wallet
+     * WalletsEvents constructor.
+     * @param Wallets $wallets
      */
-    public function __construct(Wallet $wallet)
+    public function __construct(Wallets $wallets)
     {
         parent::__construct();
-        $this->wallet = $wallet;
+        $this->wallets = $wallets;
     }
 
     /**
      * @param callable $func
-     * @return WalletEvents
+     * @return WalletsEvents
      * @throws \BitcoinRPC\Exception\EventsException
      */
     public function onLoad(callable $func): self
@@ -47,7 +48,7 @@ class WalletEvents extends AbstractEventsLib
 
     /**
      * @param callable $func
-     * @return WalletEvents
+     * @return WalletsEvents
      * @throws \BitcoinRPC\Exception\EventsException
      */
     public function onUnload(callable $func): self
@@ -58,7 +59,7 @@ class WalletEvents extends AbstractEventsLib
 
     /**
      * @param callable $func
-     * @return WalletEvents
+     * @return WalletsEvents
      * @throws \BitcoinRPC\Exception\EventsException
      */
     public function onUnlock(callable $func): self

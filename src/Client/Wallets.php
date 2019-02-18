@@ -16,6 +16,7 @@ namespace BitcoinRPC\Client;
 
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Client\Wallets\Wallet;
+use BitcoinRPC\Events\WalletsEvents;
 use BitcoinRPC\Exception\WalletsException;
 
 /**
@@ -30,7 +31,8 @@ class Wallets
     private $wallets;
     /** @var null|array */
     private $_loadedWallets;
-
+    /** @var null|WalletsEvents */
+    private $_events;
 
     /**
      * Wallets constructor.
@@ -40,6 +42,18 @@ class Wallets
     {
         $this->bitcoinRPC = $bitcoinRPC;
         $this->wallets = [];
+    }
+
+    /**
+     * @return WalletsEvents
+     */
+    public function events(): WalletsEvents
+    {
+        if (!$this->_events) {
+            $this->_events = new WalletsEvents($this);
+        }
+
+        return $this->_events;
     }
 
     /**

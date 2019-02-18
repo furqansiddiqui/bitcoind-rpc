@@ -17,7 +17,6 @@ namespace BitcoinRPC\Client\Wallets;
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Client\Wallets;
 use BitcoinRPC\DataTypes;
-use BitcoinRPC\Events\WalletEvents;
 use BitcoinRPC\Exception\WalletsException;
 use BitcoinRPC\Http\DaemonResponse;
 use BitcoinRPC\Response\SignedRawTransaction;
@@ -44,9 +43,6 @@ class Wallet
     /** @var null|int */
     private $_unlockedUntil;
 
-    /** @var null|WalletEvents */
-    private $_events;
-
     /**
      * Wallet constructor.
      * @param BitcoinRPC $bitcoinRPC
@@ -65,18 +61,6 @@ class Wallet
 
         $this->name = $name;
         $this->_isLoaded = false;
-    }
-
-    /**
-     * @return WalletEvents
-     */
-    public function events(): WalletEvents
-    {
-        if (!$this->_events) {
-            $this->_events = new WalletEvents($this);
-        }
-
-        return $this->_events;
     }
 
     /**
@@ -117,10 +101,8 @@ class Wallet
         $this->_unlockedUntil = time() + $seconds;
 
         // Event trigger
-        if ($this->_events) {
-            if ($this->_events->has("wallet.unlock")) {
-                $this->_events->trigger("wallet.unlock");
-            }
+        if ($this->wallets->events()->has("wallet.unlock")) {
+            $this->wallets->events()->trigger("wallet.unlock", [$this->name]);
         }
 
         return true;
@@ -389,10 +371,8 @@ class Wallet
         $this->_isLoaded = true;
 
         // Event trigger
-        if ($this->_events) {
-            if ($this->_events->has("wallet.load")) {
-                $this->_events->trigger("wallet.load", [$warning]);
-            }
+        if ($this->wallets->events()->has("wallet.load")) {
+            $this->wallets->events()->trigger("wallet.load", [$this->name, $warning]);
         }
     }
 
@@ -421,10 +401,8 @@ class Wallet
         }
 
         // Event trigger
-        if ($this->_events) {
-            if ($this->_events->has("wallet.unload")) {
-                $this->_events->trigger("wallet.unload");
-            }
+        if ($this->wallets->events()->has("wallet.unload")) {
+            $this->wallets->events()->trigger("wallet.unload", [$this->name]);
         }
     }
 
