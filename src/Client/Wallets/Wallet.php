@@ -294,13 +294,9 @@ class Wallet
      * @param bool $forceRefreshList
      * @return bool
      * @throws WalletsException
-     * @throws \BitcoinRPC\Exception\BitcoinRPCException
-     * @throws \BitcoinRPC\Exception\ResponseObjectException
      */
     public function isLoaded(bool $checkAtNode = false, bool $forceRefreshList = false): bool
     {
-        $this->hasDynamicLoading();
-
         if ($checkAtNode) {
             $this->wallets->isLoaded($this->name, $forceRefreshList);
         }
