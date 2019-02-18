@@ -38,7 +38,7 @@ abstract class AbstractEventsLib
      * @param callable $func
      * @throws EventsException
      */
-    protected function on(string $tag, callable $func): void
+    public function on(string $tag, callable $func): void
     {
         if (!preg_match('/^[\w\.]+$/', $tag)) {
             throw new EventsException('Invalid event tag');
@@ -51,7 +51,7 @@ abstract class AbstractEventsLib
      * @param string $tag
      * @return bool
      */
-    protected function has(string $tag): bool
+    public function has(string $tag): bool
     {
         return array_key_exists(strtolower($tag), $this->events);
     }
