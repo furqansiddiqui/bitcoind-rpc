@@ -10,7 +10,7 @@ RPC client for Bitcoin (and other altcoins based on bitcoind)
 * Ability to use custom "relay" client for communication with daemon (i.e. Create your own relay with AES encryption for working with nodes in your LAN or even internet)
 * Identify exactly what coin node/daemon is running
 * Support dynamic wallets loading/unloading on bitcoind > 0.17.0
-* Events triggers (on wallet load/unload, lock/unlock, etc...)
+* Events triggers (on wallet load/unload, unlock, etc...)
 
 ## Prerequisites
 
