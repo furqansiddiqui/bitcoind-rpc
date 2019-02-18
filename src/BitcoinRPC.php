@@ -28,7 +28,7 @@ use BitcoinRPC\Response\NetworkInfo;
  */
 class BitcoinRPC
 {
-    public const VERSION = "0.20.1";
+    public const VERSION = "0.20.2";
     public const SCALE = 8;
 
     /** @var AbstractJSONClient */
