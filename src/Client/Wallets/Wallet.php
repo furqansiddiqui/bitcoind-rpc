@@ -195,19 +195,15 @@ class Wallet
 
     /**
      * @param int $minConfirmations
-     * @param int|null $maxConfirmations
+     * @param int $maxConfirmations
      * @param array|null $addresses
      * @return UnspentOutputs
      * @throws WalletsException
      * @throws \BitcoinRPC\Exception\ResponseObjectException
      */
-    public function listUnspent(int $minConfirmations = 1, ?int $maxConfirmations = null, ?array $addresses = null): UnspentOutputs
+    public function listUnspent(int $minConfirmations = 1, int $maxConfirmations = 9999999, ?array $addresses = null): UnspentOutputs
     {
-        $args = [$minConfirmations];
-        if ($maxConfirmations) {
-            $args[] = $maxConfirmations;
-        }
-
+        $args = [$minConfirmations, $maxConfirmations];
         if ($addresses) {
             $args[] = $addresses;
         }
