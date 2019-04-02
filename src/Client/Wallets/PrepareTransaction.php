@@ -17,6 +17,7 @@ namespace BitcoinRPC\Client\Wallets;
 use BitcoinRPC\BitcoinRPC;
 use BitcoinRPC\Exception\PrepareTransactionException;
 use BitcoinRPC\Response\Output;
+use BitcoinRPC\Response\SignedRawTransaction;
 use BitcoinRPC\Response\UnspentOutputs;
 use BitcoinRPC\Validator;
 
@@ -39,6 +40,8 @@ class PrepareTransaction
     private $totalOutputsAmount;
     /** @var null|string */
     private $fee;
+    /** @var null|int */
+    private $feePerByte;
     /** @var null|string */
     private $changeAddress;
     /** @var null|array|UnspentOutputs */
@@ -95,6 +98,23 @@ class PrepareTransaction
         }
 
         $this->fee = $fee;
+        $this->feePerByte = null;
+        return $this;
+    }
+
+    /**
+     * @param int $sat
+     * @return PrepareTransaction
+     * @throws PrepareTransactionException
+     */
+    public function feePerByte(int $sat): self
+    {
+        if ($sat < 1 || $sat > 100) {
+            throw new PrepareTransactionException('Fee per byte must be between 1 and 100 satoshis');
+        }
+
+        $this->fee = null;
+        $this->feePerByte = $sat;
         return $this;
     }
 
@@ -159,18 +179,45 @@ class PrepareTransaction
      */
     public function send(): string
     {
+        if ($this->feePerByte) {
+            $pseudoFeeTx = $this->createSignedTransaction("0.0001"); // Use 0.0001 as pseudo fee
+            $transactionBytes = intval($pseudoFeeTx->hex / 2); // 2 hexits per byte
+            if ($transactionBytes > 166 && $transactionBytes < 102400) {
+                throw new PrepareTransactionException('Failed to determine transaction size in bytes for fee');
+            }
+
+            $this->fee = bcdiv(strval($this->feePerByte * $transactionBytes), bcpow("10", "8", 0), 8);
+        }
+
+        // Fee is set?
+        if (!$this->fee) {
+            throw new PrepareTransactionException('Transaction fee (or fee per byte) is not defined');
+        }
+
+        $signedTx = $this->createSignedTransaction($this->fee);
+
+        // Send transaction
+        $txId = $this->wallet->sendRawTransaction($signedTx->hex);
+        return $txId;
+    }
+
+    /**
+     * @param string $transactionFee
+     * @return SignedRawTransaction
+     * @throws PrepareTransactionException
+     * @throws \BitcoinRPC\Exception\BitcoinRPCException
+     * @throws \BitcoinRPC\Exception\ResponseObjectException
+     * @throws \BitcoinRPC\Exception\WalletsException
+     */
+    private function createSignedTransaction(string $transactionFee): SignedRawTransaction
+    {
         // Have inputs?
         if (!$this->inputs) {
             $this->inputs = $this->wallet->listUnspent(1);
         }
 
-        // Fee is set?
-        if (!$this->fee) {
-            throw new PrepareTransactionException('Transaction fee is not defined');
-        }
-
         // Total amount required
-        $totalTransactionAmount = bcadd($this->totalOutputsAmount, $this->fee, 8);
+        $totalTransactionAmount = bcadd($this->totalOutputsAmount, $transactionFee, 8);
         $totalInputsAmount = "0.00000000";
         $txInputs = [];
         $txOutputs = $this->outputs;
@@ -234,8 +281,6 @@ class PrepareTransaction
             throw new PrepareTransactionException('Signed TX is not complete, requires external keys');
         }
 
-        // Send transaction
-        $txId = $this->wallet->sendRawTransaction($signedTx->hex);
-        return $txId;
+        return $signedTx;
     }
 }

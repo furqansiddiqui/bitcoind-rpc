@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "require": {
-    "php": ">=7.1.0",
+    "php-64bit": ">=7.1.0",
     "ext-bcmath": "*",
     "furqansiddiqui/http-client": "^0.4.1"
   },
