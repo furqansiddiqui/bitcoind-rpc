@@ -181,8 +181,8 @@ class PrepareTransaction
     {
         if ($this->feePerByte) {
             $pseudoFeeTx = $this->createSignedTransaction("0.0001"); // Use 0.0001 as pseudo fee
-            $transactionBytes = intval($pseudoFeeTx->hex / 2); // 2 hexits per byte
-            if ($transactionBytes > 166 && $transactionBytes < 102400) {
+            $transactionBytes = intval(strlen($pseudoFeeTx->hex) / 2); // 2 hexits per byte
+            if ($transactionBytes < 166 && $transactionBytes > 102400) {
                 throw new PrepareTransactionException('Failed to determine transaction size in bytes for fee');
             }
 
