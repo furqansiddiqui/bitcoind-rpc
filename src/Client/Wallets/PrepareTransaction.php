@@ -109,8 +109,8 @@ class PrepareTransaction
      */
     public function feePerByte(int $sat): self
     {
-        if ($sat < 1 || $sat > 100) {
-            throw new PrepareTransactionException('Fee per byte must be between 1 and 100 satoshis');
+        if ($sat < 1 || $sat > 500) {
+            throw new PrepareTransactionException('Fee per byte must be between 1 and 500 satoshis');
         }
 
         $this->fee = null;
