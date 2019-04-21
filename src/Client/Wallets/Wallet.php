@@ -424,7 +424,7 @@ class Wallet
      */
     public function dumpPrivateKey(string $address): string
     {
-        $res = $this->walletRPC("dumprivkey", [$address]);
+        $res = $this->walletRPC("dumpprivkey", [$address]);
         if (!is_string($res->result)) {
             throw WalletsException::unexpectedResultType("dumpPrivateKey", "String", gettype($res->result));
         }
