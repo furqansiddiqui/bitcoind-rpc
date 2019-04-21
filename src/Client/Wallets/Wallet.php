@@ -418,6 +418,21 @@ class Wallet
     }
 
     /**
+     * @param string $address
+     * @return string
+     * @throws WalletsException
+     */
+    public function dumpPrivateKey(string $address): string
+    {
+        $res = $this->walletRPC("dumprivkey", [$address]);
+        if (!is_string($res->result)) {
+            throw WalletsException::unexpectedResultType("dumpPrivateKey", "String", gettype($res->result));
+        }
+
+        return $res->result;
+    }
+
+    /**
      * @param string $command
      * @param array|null $params
      * @return DaemonResponse
