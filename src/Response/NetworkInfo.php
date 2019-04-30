@@ -54,7 +54,7 @@ class NetworkInfo
         $this->subVersion = $obj["subversion"] ?? null;
         if (!is_string($this->subVersion)) {
             throw ResponseObjectException::badParamValueType("NetworkInfo.subVersion", "String", gettype($this->subVersion));
-        } elseif (!preg_match('/^\/[\w\s]+\:[0-9\.\(\)]+\/$/', $this->subVersion)) {
+        } elseif (!preg_match('/^\/[\w\s]+\:[\w\.\(\)]+\/$/', $this->subVersion)) {
             throw ResponseObjectException::badParamValueType("NetworkInfo.subVersion");
         }
 
