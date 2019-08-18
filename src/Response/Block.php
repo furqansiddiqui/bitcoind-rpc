@@ -45,7 +45,7 @@ class Block implements BitcoindResponseInterface
     public $tx;
     /** @var int */
     public $time;
-    /** @var int */
+    /** @var int|null */
     public $medianTime;
     /** @var mixed|null */
     public $nonce;
@@ -110,7 +110,7 @@ class Block implements BitcoindResponseInterface
         // Time & Median Time
         if (!is_int($this->time)) {
             throw $this->unexpectedParamValue("time", "int", gettype($this->time));
-        } elseif (!is_int($this->medianTime)) {
+        } elseif (!is_int($this->medianTime) && !is_null($this->medianTime)) {
             throw $this->unexpectedParamValue("medianTime", "int", gettype($this->medianTime));
         }
 

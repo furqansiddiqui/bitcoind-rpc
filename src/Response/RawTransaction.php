@@ -29,9 +29,9 @@ class RawTransaction implements BitcoindResponseInterface
     public $txId;
     /** @var string */
     public $hash;
-    /** @var int */
+    /** @var int|null */
     public $size;
-    /** @var int */
+    /** @var int|null */
     public $vSize;
     /** @var mixed|null */
     public $lockTime;
@@ -87,7 +87,7 @@ class RawTransaction implements BitcoindResponseInterface
         }
 
         // Size & vSize
-        if (!is_int($this->size)) {
+        if (!is_int($this->size) && !is_null($this->size)) {
             throw $this->unexpectedParamValue("size", "int", gettype($this->size));
         }
 
