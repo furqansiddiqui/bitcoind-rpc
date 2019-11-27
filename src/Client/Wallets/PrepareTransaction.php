@@ -46,6 +46,8 @@ class PrepareTransaction
     private $changeAddress;
     /** @var null|array|UnspentOutputs */
     private $inputs;
+    /** @var bool */
+    private $legacyFloatVals;
 
     /** @var null|callable */
     private $_event_changeAddressRequired;
@@ -62,6 +64,17 @@ class PrepareTransaction
         $this->outputs = [];
         $this->totalOutputsCount = 0;
         $this->totalOutputsAmount = "0.00000000";
+        $this->legacyFloatVals = false;
+    }
+
+    /**
+     * @param bool $trigger
+     * @return $this
+     */
+    public function legacyFloatVals(bool $trigger): self
+    {
+        $this->legacyFloatVals = $trigger;
+        return $this;
     }
 
     /**
@@ -80,7 +93,7 @@ class PrepareTransaction
             throw new PrepareTransactionException('Invalid output amount');
         }
 
-        $this->outputs[$address] = $amount;
+        $this->outputs[$address] = $this->legacyFloatVals ? floatval($amount) : $amount;
         $this->totalOutputsAmount = bcadd($this->totalOutputsAmount, $amount, 8);
         $this->totalOutputsCount++;
         return $this;
@@ -261,7 +274,7 @@ class PrepareTransaction
                 throw new PrepareTransactionException('A transaction change address is required');
             }
 
-            $txOutputs[$this->changeAddress] = $changeAmount;
+            $txOutputs[$this->changeAddress] = $this->legacyFloatVals ? floatval($changeAmount) : $changeAmount;
         }
 
         // Create Raw Transaction
