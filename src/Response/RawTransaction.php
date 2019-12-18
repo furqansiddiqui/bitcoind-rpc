@@ -88,7 +88,7 @@ class RawTransaction implements BitcoindResponseInterface
 
         // Size & vSize
         if (!is_int($this->size) && !is_null($this->size)) {
-            throw $this->unexpectedParamValue("size", "int", gettype($this->size));
+            throw $this->unexpectedParamValue("size", "int|null", gettype($this->size));
         }
 
         // Confirmations
