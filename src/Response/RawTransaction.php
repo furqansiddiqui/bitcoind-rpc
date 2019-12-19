@@ -41,6 +41,8 @@ class RawTransaction implements BitcoindResponseInterface
     public $vOut;
     /** @var string|null */
     public $blockHash;
+    /** @var string */
+    public $hex;
     /** @var int|null */
     public $confirmations;
     /** @var int */
@@ -65,6 +67,7 @@ class RawTransaction implements BitcoindResponseInterface
         $this->size = $obj["size"] ?? null;
         $this->vSize = $obj["vsize"] ?? null;
         $this->lockTime = $obj["locktime"] ?? null;
+        $this->hex = $obj["hex"] ?? null;
         $this->blockHash = $obj["blockhash"] ?? null;
         $this->confirmations = $obj["confirmations"] ?? null;
         $this->time = $obj["time"] ?? null;
@@ -84,6 +87,10 @@ class RawTransaction implements BitcoindResponseInterface
             if (!Validator::Hash($this->blockHash, 64)) {
                 throw $this->unexpectedParamValue("blockHash", "hash64", gettype($this->blockHash));
             }
+        }
+
+        if (!is_string($this->hex) || !preg_match('/^[a-z0-9]{8,}$/i', $this->hex)) {
+            throw $this->unexpectedParamValue("hex", "base16", gettype($this->hex));
         }
 
         // Size & vSize
