@@ -44,6 +44,19 @@ class DefaultClient extends AbstractJSONClient
     }
 
     /**
+     * @param int|null $timeOut
+     * @param int|null $connectTimeout
+     * @return AbstractJSONClient
+     * @throws JSON_RPC_Exception
+     */
+    public function setTimeout(?int $timeOut = null, ?int $connectTimeout = null): AbstractJSONClient
+    {
+        parent::setTimeout($timeOut, $connectTimeout);
+        $this->jsonRPC->setTimeout($this->timeOut, $this->connectTimeout);
+        return $this;
+    }
+
+    /**
      * @param string $method
      * @param string|null $endpoint
      * @param array|null $params

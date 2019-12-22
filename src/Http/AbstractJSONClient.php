@@ -30,6 +30,10 @@ abstract class AbstractJSONClient
     protected $port;
     /** @var AuthBasic */
     protected $auth;
+    /** @var null|int */
+    protected $timeOut;
+    /** @var null|int */
+    protected $connectTimeout;
 
     /** @var null|int */
     protected $_uniqueRequestIdNonce;
@@ -46,6 +50,18 @@ abstract class AbstractJSONClient
         $this->host = $host;
         $this->port = $port;
         $this->auth = new AuthBasic();
+    }
+
+    /**
+     * @param int|null $timeOut
+     * @param int|null $connectTimeout
+     * @return $this
+     */
+    public function setTimeout(?int $timeOut = null, ?int $connectTimeout = null): self
+    {
+        $this->timeOut = $timeOut > 0 ? $timeOut : null;
+        $this->connectTimeout = $connectTimeout > 0 ? $connectTimeout : null;
+        return $this;
     }
 
     /**

@@ -7,5 +7,6 @@
     <inspection_tool class="PhpUnnecessaryFullyQualifiedNameInspection" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="IGNORE_GLOBAL_NAMESPACE" value="true" />
     </inspection_tool>
+    <inspection_tool class="PhpUnused" enabled="true" level="WEAK WARNING" enabled_by_default="true" field_visibility="protected" method_visibility="protected" const_visibility="protected" />
   </profile>
 </component>

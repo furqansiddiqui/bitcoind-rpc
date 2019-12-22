@@ -1,7 +1,7 @@
 {
   "name": "furqansiddiqui/bitcoind-rpc",
   "type": "library",
-  "description": "JSON-RPC client for Bitcoin (and other altcoins based on bitcoind)",
+  "description": "JSON-RPC client for Bitcoin core (and other altcoins based on bitcoind)",
   "keywords": [
     "bitcoind",
     "bitcoin",
@@ -19,7 +19,7 @@
   "require": {
     "php-64bit": ">=7.1.0",
     "ext-bcmath": "*",
-    "furqansiddiqui/http-client": "^0.4.1"
+    "furqansiddiqui/http-client": "^0.4.5"
   },
   "autoload": {
     "psr-4": {
