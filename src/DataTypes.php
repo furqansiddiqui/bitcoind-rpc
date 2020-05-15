@@ -30,8 +30,10 @@ class DataTypes
         $amount = strval($amount);
 
         // Check for scientific E-notations
+        /** @noinspection RegExpSingleCharAlternation */
+        /** @noinspection RegExpRedundantEscape */
         if (preg_match('/e(\-|\+)/i', $amount)) {
-            $amount = number_format($amount, $scale, ".", ""); // Resolve
+            $amount = number_format(floatval($amount), $scale, ".", ""); // Resolve
         }
 
         if (!Validator::BcAmount($amount)) {
