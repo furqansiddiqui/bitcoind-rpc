@@ -111,12 +111,7 @@ class Block implements BitcoindResponseInterface
         if (!is_int($this->time)) {
             throw $this->unexpectedParamValue("time", "int", gettype($this->time));
         } elseif (!is_int($this->medianTime) && !is_null($this->medianTime)) {
-            throw $this->unexpectedParamValue("medianTime", "int|null", gettype($this->medianTime));
-        }
-
-        // Difficulty
-        if (!is_numeric($this->difficulty)) {
-            throw $this->unexpectedParamValue("difficulty", "numeric", gettype($this->nonce));
+            throw $this->unexpectedParamValue("medianTime", "int", gettype($this->medianTime));
         }
     }
 
