@@ -335,6 +335,7 @@ class Wallet
                 throw new WalletsException('JSON RPC client did not set lastCommandError');
             }
 
+            /** @noinspection RegExpRedundantEscape */
             if (preg_match('/duplicate \-wallet filename specified/i', $lastCommandError->message)) {
                 $this->_isLoaded = true;
                 return;
@@ -405,7 +406,7 @@ class Wallet
      */
     public function encrypt(string $passphrase): string
     {
-        if (!preg_match('/^[a-zA-Z0-9\-\_\.]{3,64}$/', $passphrase)) {
+        if (!preg_match('/^[a-zA-Z0-9\-_.]{3,64}$/', $passphrase)) {
             throw new WalletsException('Invalid encryption passphrase');
         }
 
@@ -437,7 +438,7 @@ class Wallet
      * @param array|null $params
      * @return DaemonResponse
      */
-    private function walletRPC(string $command, ?array $params = null): DaemonResponse
+    public function walletRPC(string $command, ?array $params = null): DaemonResponse
     {
         $endpoint = null;
         if ($this->name) {
